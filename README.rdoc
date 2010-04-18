@@ -1,0 +1,48 @@
+= Searching
+
+Search datasets
+
+  ics search statisical abstract
+
+Search sources
+
+  ics search -m source department of justice
+
+Search datasets with particular tags
+
+  ics search -t government,finance statistical abstract
+
+or categories
+
+  ics search -c education statistical abstract
+
+= Browsing
+
+  ics describe dataset 3923
+  ics describe source us-doj
+  ics describe field length
+
+= Downloading
+
+  ics download 39283
+
+= Creating
+
+  ics create data.yaml
+
+also
+
+  ics schema source
+  ics schema dataset
+
+and of course
+
+  ics upload 39283 path/to/my/data
+
+= General Options
+
+Work as someone other than the usual user
+
+  ics -i path/to/my/identify_file.yml create data.yaml
+
+

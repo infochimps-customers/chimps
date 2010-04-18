@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+require "ics/cli"
+
+if $0 == __FILE__
+  begin
+    ICS::CLI.execute!(ARGV.dup)
+  rescue ICS::CLI::Error, ICS::AuthenticationError => e
+    puts e.message
+    exit 1
+  rescue => e
+    $stderr.puts("#{e.message} (#{e.class})")
+    $stderr.puts(e.backtrace.join("\n"))
+    exit 1
+  end
+end
+
