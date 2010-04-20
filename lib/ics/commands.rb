@@ -17,7 +17,7 @@ module ICS
     end
     
 
-    NAMES = %w[search help test create show]
+    NAMES = %w[search help test create show update destroy]
     
     NAMES.each do |name|
       autoload name.capitalize.to_sym, "ics/commands/#{name}"

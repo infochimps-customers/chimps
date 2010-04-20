@@ -15,6 +15,15 @@ module ICS
           model + 's'
         end
       end
+
+      def model_identifier
+        raise CLIError.new("Must provide an ID or URL-escaped handle as the first argument") if argv.first.blank?
+        argv.first
+      end
+
+      def model_path
+        "#{plural_model}/#{model_identifier}.json"
+      end
       
       def model= model
         raise CLIError.new("Invalid model: #{model}.  Must be one of #{models_string}") unless self.class::MODELS.include?(model)

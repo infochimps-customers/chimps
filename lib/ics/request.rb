@@ -52,6 +52,20 @@ module ICS
       end
     end
 
+    def put
+      handle_exceptions do
+        puts "PUT #{url}" if ICS.verbose?
+        ICS::Response.new(super(data_text, :content_type => 'application/json', :accept => 'applicaton/json'))
+      end
+    end
+
+    def delete
+      handle_exceptions do
+        puts "DELETE #{url}" if ICS.verbose?
+        ICS::Response.new(super(:content_type => 'application/json', :accept => 'application/json'))
+      end
+    end
+    
     protected
     def handle_exceptions &block
       begin

@@ -18,17 +18,8 @@ EOF
       MODELS = %w[dataset collection source license tag category]
       include ICS::Commands::UsesModel
 
-      def path
-        "#{plural_model}/#{model_identifier}.json"
-      end
-
-      def model_identifier
-        raise CLIError.new("Must provide an ID or URL-escaped handle to show") if argv.first.blank?
-        argv.first
-      end
-
       def execute!
-        ICS::Request.new(path).get.print
+        ICS::Request.new(model_path).get.print
       end
 
     end

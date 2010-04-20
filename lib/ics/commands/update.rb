@@ -5,13 +5,13 @@ require 'ics/commands/uses_key_value_data'
 
 module ICS
   module Commands
-    class Create < ICS::Command
+    class Update < ICS::Command
 
-      BANNER = "usage: ics create [OPTIONS] [PROP=VALUE] ..."
+      BANNER = "usage: ics update [OPTIONS] ID_OR_HANDLE [PROP=VALUE] ..."
       HELP   = <<EOF
 
-Create a single resource (defaults to dataset) using the properties
-and values supplied.
+Updates a single resource of a given type (defaults to dataset)
+identified by ID_OR_HANDLE using the properties and values supplied.
 
 Properties and values can be supplied directly on the command line,
 from an input YAML file, or multiple YAML documents streamed in via
@@ -23,13 +23,8 @@ EOF
       include ICS::Commands::UsesModel
       include ICS::Commands::UsesKeyValueData
 
-      def path
-        model + 's.json'
-      end
-
       def execute!
-        response = Request.new(path, :data => {model.to_sym => data } , :authenticate => true).post
-        response.print if ICS.verbose?
+        Request.new(model_path, :data => {model.to_sym => data } , :authenticate => true).put.print
       end
       
     end

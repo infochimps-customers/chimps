@@ -9,7 +9,7 @@ module ICS
           begin
             lines.concat(send("pretty_print_#{object_name}", data, options))
           rescue NoMethodError => e
-            raise ServerError.new("Unknown object #{object_name}.  If ics is already the latest version, please email help@infochimps.org to file a bug report.")
+            $stderr.puts("WARNING: Unknown object #{object_name} in server response")
           end
         end
       end

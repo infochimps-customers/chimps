@@ -35,7 +35,7 @@ module ICS
             break
           end
         end
-        @command_index or raise Error.new("Must specify a command.  Try running `ics help'")
+        @command_index or raise CLIError.new("Must specify a command.  Try running `ics help'")
       end
 
       def command_name

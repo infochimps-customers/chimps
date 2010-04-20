@@ -16,14 +16,25 @@ module ICS
     end
 
     def parse_json!
-      merge!(JSON.parse(body)) unless body.blank? || body == 'null'
+      begin
+        merge!(JSON.parse(body)) unless body.blank? || body == 'null'
+      rescue JSON::ParserError => e
+        $stdout.puts("WARNING: Unable to parse response from server")
+      end
     end
 
     def success?
       ! @rest_client_error
     end
 
+    def error?
+      ! success?
+    end
+    
     def print
+      first_line = "#{code.to_s} -- "
+      first_line += (success? ? "SUCCESS" : error_message)
+      puts first_line if ICS.verbose? || error?
       puts pretty_print(self).join("\n")
     end
 
@@ -38,16 +49,15 @@ module ICS
         @rest_client_error    = nil
       end
 
+      begin
+        @body          = @rest_client_response.body
+      rescue NoMethodError
+        @body          = @rest_client_response.to_s
+      end
       @code          = @rest_client_response.code
-      @body          = @rest_client_response.to_s
       @error_message = @rest_client_error.message unless success?
     end
 
-    def emit_first_line
-      first_line = "#{code.to_s} -- "
-      first_line += (success? ? "SUCCESS" : error_message)
-      puts first_line
-    end
   end
 end
   
