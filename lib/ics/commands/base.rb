@@ -1,58 +1,55 @@
 module ICS
   class Command < OptionParser
 
-    # 
-    # The following constants and methods should be overridden by
-    # subclasses
-    #
-
     BANNER = "Define #{self}::BANNER when you subclass ICS::Command"
     HELP   = "Define #{self}::HELP when you subclass ICS::Command"
 
-    def define_options
-      raise NotImplementedError.new("Define #{self.class}#define_options when you subclass ICS::Command.  It should call methods like OptionParser#on to define command line options for this command.")
-    end
-
-
-    #
-    # Begin base class definition
-    #
-    
     attr_reader :argv
 
     def initialize argv
       super self.class::BANNER
-      separator self.class::HELP
       @argv = argv
-      define_common_options
-      define_options
+      run_options_definers
       parse_command_line!
       ICS::Config.load
     end
 
+    def self.name
+      self.to_s.downcase
+    end
+
+    def name
+      self.class.name
+    end
+    
+    protected
+    def parse_command_line!
+      begin
+        parse!(argv)
+      rescue OptionParser::InvalidOption => e
+        raise CLIError.new("#{e.message}.  Try `ics help #{name}'")
+      end
+    end
+      
+    # FIXME there's a better way to do this...
+    def run_options_definers
+      methods.grep(/^define.+options?$/).each { |method| send method }
+    end
+
     def define_common_options
-      on("-v", "--[no]-verbose", "Be verbose, or not.") do |v|
+      separator self.class::HELP
+      separator "\nOptions include:"
+      
+      on("-v", "--[no-]verbose", "Be verbose, or not.") do |v|
         ICS::CONFIG[:verbose] = v
       end
       
       on("-i", "--identity-file PATH", "Use the given YAML identify file to authenticate with Infochimps instead of the default (~/.ics) ") do |i|
+        puts "saw identify file flag, ICS::CONFIG = #{ICS::CONFIG.inspect}"
         ICS::CONFIG[:identify_file] = File.expand_path(i)
+        puts "and now ICS::CONFIG = #{ICS::CONFIG.inspect}"
       end
     end
-
-    def parse_command_line!
-      parse!
-    end
-
-    def emit *args
-      args.each do |line|
-        puts case line
-             when String then line
-             when Array then line.join("\t")
-             when Hash then line.inspect
-             end
-      end
-    end
-
+    
   end
 end

@@ -1,13 +1,14 @@
 require 'cgi'
 require 'digest/md5'
-require 'ics/response'
 require 'restclient'
+
+require 'ics/response'
+require 'ics/utils'
 
 module ICS
 
-  AuthenticationError = Class.new(StandardError)
-  
   class Request < RestClient::Resource
+    
 
     attr_accessor :path, :query_params, :data
 
@@ -38,10 +39,28 @@ module ICS
     end
 
     def get
-      ICS::Response.new(super)
+      handle_exceptions do
+        puts "GET #{url}" if ICS.verbose?
+        ICS::Response.new(super(:content_type => 'application/json', :accept => 'applicaton/json'))
+      end
+    end
+
+    def post
+      handle_exceptions do
+        puts "POST #{url}" if ICS.verbose?
+        ICS::Response.new(super(data_text, :content_type => 'application/json', :accept => 'applicaton/json'))
+      end
     end
 
     protected
+    def handle_exceptions &block
+      begin
+        yield
+      rescue RestClient::NotModified, RestClient::Unauthorized, RestClient::ResourceNotFound, RestClient::RequestFailed => e
+        return Response.new(e)
+      end
+    end
+    
     def authenticate_if_necessary!
       return unless authenticate?
       raise ICS::AuthenticationError.new("No API key stored in #{CONFIG[:identity_file]}, .") if CONFIG[:api_key].blank?
@@ -64,7 +83,11 @@ module ICS
     #
     #   appledeliciouszebracrazy
     def query_params_text
-      alphabetical_params.map { |key| CGI::escape(key.to_s) + CGI::escape(query_params[key.to_sym].to_s) }.join('')
+      @query_params_text ||= alphabetical_params.map { |key| CGI::escape(key.to_s) + CGI::escape(query_params[key.to_sym].to_s) }.join('')
+    end
+
+    def data_text
+      @data_text ||= data.to_json
     end
 
     # Sign +string+ by concatenting it with the secret and computing
@@ -76,7 +99,8 @@ module ICS
 
     # Append the signature to the unsigned query string.
     def signed_query_string
-      "#{unsigned_query_string}&signature=#{sign(query_params_text)}"
+      signature = sign(data.blank? ? query_params_text : data_text)
+      "#{unsigned_query_string}&signature=#{signature}"
     end
 
   end

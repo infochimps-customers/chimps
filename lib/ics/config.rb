@@ -7,6 +7,10 @@ module ICS
     :identity_file => File.expand_path("~/.ics"),
     :verbose       => nil
   }
+
+  def self.verbose?
+    CONFIG[:verbose]
+  end
   
   module Config
 

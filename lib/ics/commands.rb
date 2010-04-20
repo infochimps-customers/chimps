@@ -5,17 +5,26 @@ require 'ics/utils'
 module ICS
   module Commands
 
-    def self.find command
-      constants.each do |c|
-        return "ICS::Commands::#{c}".constantize if c.downcase == command
+    def self.construct command_name, argv
+      self.constants.each do |constant_name|
+        return "ICS::Commands::#{constant_name}".constantize.new(argv) if constant_name.downcase == command_name
       end
-      raise CLI::Error.new("Invalid command: #{command}.  Try running `ics help'")
+      raise CLIError.new("Invalid command: #{command_name}.  Try running `ics help'")
     end
 
-    autoload :Search, 'ics/commands/search'
-    autoload :Help,   'ics/commands/help'
-    autoload :Test,   'ics/commands/test'
+    def construct command_name, argv
+      ICS::Commands.construct command_name, argv
+    end
     
+
+    NAMES = %w[search help test create show]
+    
+    NAMES.each do |name|
+      autoload name.capitalize.to_sym, "ics/commands/#{name}"
+    end
+    
+    def command_name? name
+      NAMES.include?(name)
+    end
   end
-  
 end

@@ -40,14 +40,11 @@ Some general options are accepted by all the commands understood by
 this program:
 EOF
       
-      def define_options
-      end
-
       def execute!
         if argv.first.blank?
           puts self
         else
-          puts ICS::Commands.find(argv.first).new([])
+          puts ICS::Commands.construct(argv.first, [])
         end
       end
 
