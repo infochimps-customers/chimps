@@ -148,8 +148,10 @@ EOF
       end
 
       def upload_with_curl!
-        command = "#{curl} -X POST #{token_data_for_curl} #{token['url']}"
-        print command if ICS.verbose?
+        progress_meter = ICS.verbose? ? '' : '-s -S'
+        command = "#{curl} #{progress_meter} -o /dev/null -X POST #{token_data_for_curl} #{token['url']}"
+        puts command if ICS.verbose?
+        puts "Uploading #{archive_path} to Infochimps"
         raise ServerError.new("Failed to upload #{archive_path} to Infochimps") unless system(command)
       end
 
@@ -172,7 +174,7 @@ EOF
       end
 
       def package_params
-        {:host => 's3', :path => token['key'], :fmt => token['fmt'], :archive => archive.extname, :pkg_size => archive.size}
+        { :package => {:host => 's3', :path => token['key'], :fmt => token['fmt'], :archive => archive.extname, :pkg_size => archive.size} }
       end
 
       def notify_infochimps!

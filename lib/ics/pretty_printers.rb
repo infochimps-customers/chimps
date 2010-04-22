@@ -55,17 +55,22 @@ module ICS
         [[data['id'], data['updated_at'], data['main_link'], data['title']].join("\t")]
       else
         returning([]) do |lines|
-          lines << "ID:           #{data['id']}"
-          lines << "TITLE:        #{data['title']}"
-          lines << "SUBTITLE:     #{data['subtitle']}"            unless data['subtitle'].blank?
-          lines << "TAGS:         #{data['tag_list'].join(', ')}" unless data['tag_list'].blank?
-          lines << "LAST UPDATED: #{data['updated_at']}"
-          lines << "PROTECTED:    #{!!data['protected']}"
-          lines << "OWNER:        #{data['owner_id']}"
+          lines << "DATASET #{data['id']}"
+          lines << "  TITLE:        #{data['title']}"
+          lines << "  SUBTITLE:     #{data['subtitle']}"            unless data['subtitle'].blank?
+          lines << "  TAGS:         #{data['tag_list'].join(', ')}" unless data['tag_list'].blank?
+          lines << "  LAST UPDATED: #{data['updated_at']}"
+          lines << "  PROTECTED:    #{!!data['protected']}"
+          lines << "  OWNER:        #{data['owner_id']}"
           lines << '' unless data['notes'].blank?
           data['notes'].each do |note|
-            lines << "#{note['title'].upcase}:"
-            lines << "#{note['body']}"
+            lines << "  #{note['title'].upcase}:"
+            lines.concat(word_wrap(note['body'], :indent => 4))
+          end
+
+          data['packages'].each_with_index do |package, index|
+            lines.concat(pretty_print_package(package, options.merge(:indent => 2)))
+            lines << '' unless (index + 1) == data['packages'].length
           end
 
           # FIXME add categories, sources, fields, snippet, &c...
@@ -75,6 +80,26 @@ module ICS
 
     end
 
+    def pretty_print_package data, options={}
+      spacer = options[:indent] ? ' ' * options[:indent] : ''
+      returning([]) do |lines|
+        lines << "#{spacer}PACKAGE #{data['id']}"
+        lines << "#{spacer}  FILENAME:     #{data['basename']}"
+        lines << "#{spacer}  FORMAT:       #{data['fmt']}"
+        lines << "#{spacer}  ARCHIVE TYPE: #{data['pkg_fmt']}"
+        lines << "#{spacer}  SIZE:         #{data['pkg_size']}"
+        lines << "#{spacer}  NUM FILES:    #{data['num_files']}"   unless data['num_files'].blank?
+        lines << "#{spacer}  RECORDS:      #{data['num_records']}" unless data['num_records'].blank?
+      end
+    end
+
+    def word_wrap string, options={}
+      options[:columns] = 80 unless options[:columns]
+      spacer  = options[:indent] ? ' ' * options[:indent] : ''
+      # http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/10655
+      string.gsub(/\t/,"     ").gsub(/.{1,#{options[:columns]}}(?:\s|\Z)/){($& + 5.chr).gsub(/\n\005/,"\n").gsub(/\005/,"\n")}.split("\n").map { |line| spacer + line }
+    end
   end
+  
 end
   

@@ -16,7 +16,7 @@ module ICS
       ICS::Commands.construct command_name, argv
     end
 
-    NAMES = %w[search help test create show update destroy upload list]
+    NAMES = %w[search help test create show update destroy upload list download]
     
     NAMES.each do |name|
       autoload name.capitalize.to_sym, "ics/commands/#{name}"
