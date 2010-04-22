@@ -43,7 +43,7 @@ module ICS
 
       def define_model_option
         on_tail("-m", "--model MODEL", "Use a different resource, one of: #{models_string}") do |m|
-          model = m
+          self.model= m
         end
       end
     end
