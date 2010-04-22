@@ -15,7 +15,7 @@ by ID_OR_HANDLE.
 EOF
 
       # Models this command applies to (default first)
-      MODELS = %w[dataset source license]
+      MODELS = %w[dataset package source license]
       include ICS::Commands::UsesModel
 
       def execute!
