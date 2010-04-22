@@ -17,7 +17,8 @@ module ICS
       @path         = path
       @query_params = options[:query_params] || options[:params] || {}
       @data         = options[:data]         || {}
-      @authentication_required = options[:authenticate] || options[:authenticated] || options[:sign] || options[:signed]
+      @authentication_required      = options[:authenticate] || options[:authenticated] || options[:sign] || options[:signed] || options[:sign_if_possible]
+      @forgive_authentication_error = options[:sign_if_possible] || options[:authenticate_if_possible]
       authenticate_if_necessary!
       super url_with_query_string
     end
@@ -25,10 +26,13 @@ module ICS
     def authenticate?
       @authentication_required
     end
-    alias_method :authenticated?, :authenticate?
-    alias_method :signed?, :authenticate?
     alias_method :sign?, :authenticate?
-    
+
+    def authenticable?
+      !ICS::CONFIG[:api_key].blank? && !ICS::CONFIG[:api_secret].blank?
+    end
+    alias_method :signable?, :authenticable?
+
     def url_with_query_string
       base_url = File.join(ICS::CONFIG[:host], path)
       base_url += "?#{query_string}" unless query_string.blank?
@@ -36,7 +40,7 @@ module ICS
     end
 
     def query_string
-      authenticate? ? signed_query_string : unsigned_query_string
+      (authenticate? && authenticable?) ? signed_query_string : unsigned_query_string
     end
 
     def get options={}
@@ -78,8 +82,9 @@ module ICS
     
     def authenticate_if_necessary!
       return unless authenticate?
-      raise ICS::AuthenticationError.new("No API key stored in #{CONFIG[:identity_file]}, .") if CONFIG[:api_key].blank?
-      query_params[:api_key] = CONFIG[:api_key]
+      raise ICS::AuthenticationError.new("API key or secret missing from #{CONFIG[:identity_file]}") unless (authenticable? || @forgive_authentication_error)
+      query_params[:requested_at] = Time.now.to_i.to_s
+      query_params[:api_key]      = ICS::CONFIG[:api_key]
     end
 
     def alphabetical_params
@@ -108,7 +113,7 @@ module ICS
     # Sign +string+ by concatenting it with the secret and computing
     # the MD5 digest of the whole thing.
     def sign string
-      raise ICS::AuthenticationError.new("No API secret stored in #{CONFIG[:identity_file]}.") if CONFIG[:api_secret].blank?
+      raise ICS::AuthenticationError.new("No API secret stored in #{CONFIG[:identity_file]}.") unless (authenticable? || @forgive_authentication_error)
       Digest::MD5.hexdigest(string + CONFIG[:api_secret])
     end
 
