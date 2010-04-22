@@ -16,10 +16,21 @@ module ICS
     end
 
     def parse_json!
-      begin
-        merge!(JSON.parse(body)) unless body.blank? || body == 'null'
-      rescue JSON::ParserError => e
-        $stdout.puts("WARNING: Unable to parse response from server")
+      unless body.blank? || body == 'null'
+        begin        
+          data = JSON.parse(body)
+          # hack...sometimes we get back an array instead of a
+          # hash...should change the API at ICS end
+          case data            
+          when Hash   then merge!(data)
+          when Array  then self[:list]   = data # see corresponding pretty printers
+          when String then self[:string] = data
+          else
+          end
+        rescue JSON::ParserError => e
+          puts body.inspect if ICS.verbose?
+          $stdout.puts("WARNING: Unable to parse response from server")
+        end
       end
     end
 

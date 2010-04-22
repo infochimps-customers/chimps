@@ -6,9 +6,10 @@ module ICS
     def pretty_print hash, options={}
       returning([]) do |lines|
         hash.each_pair do |object_name, data|
-          begin
-            lines.concat(send("pretty_print_#{object_name}", data, options))
-          rescue NoMethodError => e
+          method = "pretty_print_#{object_name.to_s}"
+          if respond_to?(method)
+            lines.concat(send(method, data, options))
+          else
             $stderr.puts("WARNING: Unknown object #{object_name} in server response")
           end
         end
@@ -20,6 +21,16 @@ module ICS
     #
     # Each of the following methods must return an Array of Strings
     #
+
+    def pretty_print_list data, options={}
+      data.map do |hash|
+        pretty_print hash, options.merge(:single_line => true)
+      end
+    end
+
+    def pretty_print_string data, options={}
+      [data]
+    end
 
     def pretty_print_errors data, options={}
       data.map { |error_message| "  #{error_message}" }

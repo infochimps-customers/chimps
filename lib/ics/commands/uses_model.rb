@@ -21,6 +21,10 @@ module ICS
         argv.first
       end
 
+      def models_path
+        "#{plural_model}.json"
+      end
+
       def model_path
         "#{plural_model}/#{model_identifier}.json"
       end

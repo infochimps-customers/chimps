@@ -5,11 +5,16 @@ module ICS
   CONFIG = {
     :host          => ENV["ICS_HOST"] || 'http://infochimps.org',
     :identity_file => File.expand_path("~/.ics"),
-    :verbose       => nil
+    :verbose       => nil,
+    :timestamp_format => "%Y-%m-%d_%H-%M-%S"
   }
 
   def self.verbose?
     CONFIG[:verbose]
+  end
+
+  def self.username
+    CONFIG[:username] or raise AuthorizationError.new("No username set in #{ICS::CONFIG[:identity_file]}")
   end
   
   module Config
@@ -24,8 +29,6 @@ module ICS
           CONFIG[key.to_sym] = value
         end
       end
-        
     end
   end
-  
 end

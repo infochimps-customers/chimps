@@ -8,7 +8,8 @@ require 'ics/utils'
 module ICS
 
   class Request < RestClient::Resource
-    
+
+    CONTENT_TYPE = { :content_type => 'application/json', :accept => 'application/json' }
 
     attr_accessor :path, :query_params, :data
 
@@ -38,31 +39,31 @@ module ICS
       authenticate? ? signed_query_string : unsigned_query_string
     end
 
-    def get
+    def get options={}
       handle_exceptions do
         puts "GET #{url}" if ICS.verbose?
-        ICS::Response.new(super(:content_type => 'application/json', :accept => 'applicaton/json'))
+        ICS::Response.new(super(CONTENT_TYPE.merge(options)))
       end
     end
 
-    def post
+    def post options={}
       handle_exceptions do
         puts "POST #{url}" if ICS.verbose?
-        ICS::Response.new(super(data_text, :content_type => 'application/json', :accept => 'applicaton/json'))
+        ICS::Response.new(super(data_text, CONTENT_TYPE.merge(options)))
       end
     end
 
-    def put
+    def put options={}
       handle_exceptions do
         puts "PUT #{url}" if ICS.verbose?
-        ICS::Response.new(super(data_text, :content_type => 'application/json', :accept => 'applicaton/json'))
+        ICS::Response.new(super(data_text, CONTENT_TYPE.merge(options)))
       end
     end
 
-    def delete
+    def delete options={}
       handle_exceptions do
         puts "DELETE #{url}" if ICS.verbose?
-        ICS::Response.new(super(:content_type => 'application/json', :accept => 'application/json'))
+        ICS::Response.new(super(CONTENT_TYPE.merge(options)))
       end
     end
     
