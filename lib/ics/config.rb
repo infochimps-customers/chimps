@@ -16,7 +16,7 @@ module ICS
   def self.username
     CONFIG[:username] or raise AuthorizationError.new("No username set in #{ICS::CONFIG[:identity_file]}")
   end
-  
+
   module Config
 
     def self.ics_root
