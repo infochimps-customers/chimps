@@ -1,0 +1,70 @@
+---
+
+# This is an example of the expected structure of a file used in a
+# bulk update.
+#
+# It consists of one large array itself consisting of mappings from a
+# resource name (dataset, license, source) to properties about that
+# resource.
+#
+# Many such documents can be combined together in a YAML stream and
+# sent as a single request.
+
+- source:
+    id: ~
+    request_id: foobar
+    title: Foobar the Fake Source
+    description: |
+      
+      Foobar generates great data!  Unfortunately, it's all of it
+      fake!
+
+- dataset:
+    # this dataset lacks an ID property so it will be created
+    id:
+    title: expatriatoro
+    description: |
+      Just some description of my dataset
+
+    tag_list:
+      - foo
+      - bar
+      - baz
+
+    sources:
+      # must all exist
+      - Census Bureau
+      - foobar
+
+    fields:
+      - title: length
+        units: m
+
+      - title: mass
+        units: kg
+    local_paths:
+      - /tmp/waste/waste.c
+
+- dataset:
+    id: 1
+    title: f
+    description: |
+      Just some description of my dataset
+
+    tag_list:
+      - foo
+      - bar
+      - baz
+
+    sources:
+      # must all exist
+      - Census Bureau
+      - foobar
+
+    snippet:
+      columns: foo, bar,baz
+      data:
+        - [1,2,3]
+        - [4,5,6]
+        - [7,8,9]
+
