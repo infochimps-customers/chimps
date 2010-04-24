@@ -1,3 +1,5 @@
+# this whole file is a waste of time.  i wish the yaml api worked.
+
 module ICS
 
   module PrettyPrinters
@@ -11,6 +13,7 @@ module ICS
             lines.concat(send(method, data, options))
           else
             $stderr.puts("WARNING: Unknown object #{object_name} in server response")
+            $stderr.puts data.inspect if ICS.verbose?
           end
         end
       end
@@ -21,6 +24,26 @@ module ICS
     #
     # Each of the following methods must return an Array of Strings
     #
+
+    def pretty_print_batch data, options={}
+      output = []
+      data.each do |response|
+        status = response['status']
+        if response['resource']
+          resource_type = response['resource'].keys.first
+          resource_id   = response['resource'][resource_type]['id']
+          output << [status, resource_type, resource_id].map(&:to_s).join("\t")
+        end
+        if response['errors']
+          output.concat(pretty_print_errors(response['errors']))
+        end
+        if response['debug']
+          output << [response['debug']['type'], response['debug']['message']].map(&:to_s).join("\t")
+          output.concat(response['debug']['backtrace'])
+        end
+      end
+      output
+    end
 
     def pretty_print_list data, options={}
       data.map do |hash|
