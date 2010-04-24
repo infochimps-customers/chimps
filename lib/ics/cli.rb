@@ -6,7 +6,16 @@ module ICS
   module CLI
 
     def self.execute! argv
-      Runner.new(argv).execute!
+      begin
+        Runner.new(argv).execute!    
+      rescue ICSError => e
+        puts e.message
+        exit 1
+      rescue => e
+        $stderr.puts("#{e.message} (#{e.class})")
+        $stderr.puts(e.backtrace.join("\n"))
+        exit 1
+      end
     end
     
     class Runner
@@ -18,12 +27,12 @@ module ICS
         @argv = argv
       end
 
-      def command
-        @command ||= construct(command_name, argv_for_command)
-      end
-
       def execute!
         command.execute!
+      end
+      
+      def command
+        @command ||= construct(command_name, argv_for_command)
       end
 
       protected
