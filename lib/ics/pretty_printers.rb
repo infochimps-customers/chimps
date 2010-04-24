@@ -29,14 +29,18 @@ module ICS
       output = []
       data.each do |response|
         status = response['status']
+        
         if response['resource']
           resource_type = response['resource'].keys.first
           resource_id   = response['resource'][resource_type]['id']
-          output << [status, resource_type, resource_id].map(&:to_s).join("\t")
+          output << [status.upcase, resource_type, resource_id].map(&:to_s).join("\t")
         end
+        
         if response['errors']
+          output << ["ERROR", status].map(&:to_s).join("\t")
           output.concat(pretty_print_errors(response['errors']))
         end
+
         if response['debug']
           output << [response['debug']['type'], response['debug']['message']].map(&:to_s).join("\t")
           output.concat(response['debug']['backtrace'])
