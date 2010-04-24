@@ -45,9 +45,7 @@ module ICS
       end
       
       on("-i", "--identity-file PATH", "Use the given YAML identify file to authenticate with Infochimps instead of the default (~/.ics) ") do |i|
-        puts "saw identify file flag, ICS::CONFIG = #{ICS::CONFIG.inspect}"
-        ICS::CONFIG[:identify_file] = File.expand_path(i)
-        puts "and now ICS::CONFIG = #{ICS::CONFIG.inspect}"
+        ICS::CONFIG[:identity_file] = File.expand_path(i)
       end
     end
     
