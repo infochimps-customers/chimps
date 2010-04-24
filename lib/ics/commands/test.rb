@@ -5,8 +5,6 @@ module ICS
   module Commands
     class Test < ICS::Command
 
-      PATH = 'test_api_authentication.json'
-
       BANNER = "usage: ics test"
       HELP = <<EOF
 
@@ -15,9 +13,13 @@ and send a test request to Infochimps to make sure the API credentials
 work.
 
 EOF
+      def path
+        "api_accounts/#{ICS::CONFIG[:api_key]}"
+      end
+      
       def execute!
         puts "Reading identity file at #{CONFIG[:identity_file]}" if ICS.verbose?
-        ICS::Request.new(PATH, :sign => true).get.print
+        ICS::Request.new(path, :sign => true).get.print
       end
 
     end
