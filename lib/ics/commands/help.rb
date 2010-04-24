@@ -51,8 +51,17 @@ If you're confused try running
 
 for any of the commands above.
 
-Some general options are accepted by all the commands understood by
-this program:
+= Setup
+
+Once you've obtained an API key and secret from Infochimps, place them
+in a file ICS::CONFIG[:identity_file] in your home directory with the
+following format
+
+  --- 
+  username: your_user_name
+  api_key: oreeph6giedaeL3
+  api_secret: Queechei6cu8chiuyiig8cheg5Ahx0boolaizi1ohtarooFu1doo5ohj5ohp9eehae5hakoongahghohgoi7yeihohx1eidaeng0eaveefohchoh6WeeV1EM
+
 EOF
       
       def execute!
