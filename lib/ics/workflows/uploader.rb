@@ -86,12 +86,13 @@ module ICS
       end
 
       def create_archive!
-        puts "Creating archive..." if ICS.verbose?
-        @archive = archiver.package!(archive_path)
+        puts_and_again("Creating archive...", "done") do
+          @archive = archiver.package!(archive_path)
+        end
         raise PackagingError.new("Unable to package files for upload.  Temporary files left in #{archiver.tmp_dir}") if archive.is_a?(RuntimeError) || (not archiver.success?)
-        puts "Created archive at #{archive.path}"
-        puts "Removing temporary files from #{archiver.tmp_dir}..." if ICS.verbose?
-        archiver.clean!
+        puts_and_again("Removing temporary files from #{archiver.tmp_dir}...", "done") do
+          archiver.clean!
+        end
       end
       
       def ask_for_token!
@@ -124,8 +125,9 @@ module ICS
         progress_meter = ICS.verbose? ? '' : '-s -S'
         command = "#{curl} #{progress_meter} -o /dev/null -X POST #{token_data_for_curl} #{token['url']}"
         puts command if ICS.verbose?
-        puts "Uploading #{archive_path} to Infochimps..."
-        raise UploadError.new("Failed to upload #{archive_path} to Infochimps") unless system(command)
+        puts_and_again("Uploading #{archive_path} to Infochimps...", "done") do
+          raise UploadError.new("Failed to upload #{archive_path} to Infochimps") unless system(command)
+        end
       end
 
       def upload_with_rest_client!
