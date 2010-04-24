@@ -1,3 +1,4 @@
+require 'yaml'
 require 'json'
 require 'restclient'
 require 'ics/pretty_printers'
@@ -12,13 +13,13 @@ module ICS
     def initialize rest_client_obj
       super      
       deal_with_rest_client_bullshit(rest_client_obj)
-      parse_json!
+      parse!
     end
 
-    def parse_json!
+    def parse!
       unless body.blank? || body == 'null'
-        begin        
-          data = JSON.parse(body)
+        begin
+          data = content_type == :yaml ? YAML.parse(body) : JSON.parse(body)
           # hack...sometimes we get back an array instead of a
           # hash...should change the API at ICS end
           case data            
@@ -27,7 +28,7 @@ module ICS
           when String then self[:string] = data
           else
           end
-        rescue JSON::ParserError => e
+        rescue YAML::ParseError, JSON::ParserError => e
           puts body.inspect if ICS.verbose?
           $stdout.puts("WARNING: Unable to parse response from server")
         end
@@ -40,6 +41,16 @@ module ICS
 
     def error?
       ! success?
+    end
+
+    def content_type
+      begin
+        @rest_client_response.headers[:content_type]
+      rescue NoMethodError
+        raw_content_type = @rest_client_response.content_type
+        return :json if raw_content_type =~ /application\/json/
+        return :yaml if raw_content_type =~ /yaml/
+      end
     end
     
     def print
