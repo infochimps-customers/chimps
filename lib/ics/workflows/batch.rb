@@ -27,7 +27,7 @@ module ICS
       def batch_update!
         @batch_response = Request.new(PATH, :data => { :batch => data }, :authenticate => true).post
         File.open(output_file, 'w') { |f| f.puts batch_response.to_yaml } if output_file
-        batch_response.print if ICS.verbose?
+        batch_response.print
       end
 
       def error?
@@ -44,14 +44,11 @@ module ICS
 
       def batch_upload!
         if success? || upload_even_if_errors
-          $stderr.puts("WARNING: continuing with upload even though there were errors") if error?
+          $stderr.puts("WARNING: continuing with uploads even though there were errors") if error?
           dataset_ids_and_local_paths.each do |id, local_paths|
-            puts "Processing #{id} at #{local_paths.inspect}"
             upload_response = ICS::Workflows::Uploader.new(:dataset => id, :local_paths => local_paths, :curl => curl?).execute!
             upload_response.print if upload_response.error?
           end
-        else
-          batch_response.print
         end
       end
 
