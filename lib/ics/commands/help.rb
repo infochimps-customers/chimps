@@ -23,18 +23,33 @@ Learn more about the Infochimps API which powers this tool at
 
   http://infochimps.org/api
 
-Here's a quick summary of the available commands:
+= Commands
 
-  ics search QUERY
-  ics browse MODEL IDENTIFIER
-  ics create PATH
-  ics edit MODEL IDENTIFIER PROPERTY VALUE
-  ics delete MODEL IDENTIFIER
-  ics upload IDENTIFIER PATH [PATH...]
-  ics help [COMMAND]
+ics is a wrapper over the RESTful Infochimps API.  It exposes the
+following actions
 
-If you're confused, running `ics help' right now might be a good thing
-to do!
+  ics list
+  ics show
+  ics create
+  ics update
+  ics destroy
+
+for datasets (as well as other selected resources).  It also helps
+automate the workflow of uploading data and making batch changes with
+
+  ics upload
+  ics batch
+
+you can also test that your system is configured properly and that you
+can authenticate with Infochimps with
+
+  ics test  
+
+If you're confused try running
+
+  ics help COMMAND
+
+for any of the commands above.
 
 Some general options are accepted by all the commands understood by
 this program:
