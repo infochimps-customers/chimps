@@ -1,0 +1,17 @@
+# version control
+.svn
+.hg
+.bzr
+
+# editors
+\#*
+.#*
+\.#*
+*~
+*.tmproj
+
+# miscellaneous
+.DS_Store
+.bak
+TAGS
+*DO_NOT_VERSION*
