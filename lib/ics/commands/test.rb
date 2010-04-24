@@ -19,7 +19,16 @@ EOF
       
       def execute!
         puts "Reading identity file at #{CONFIG[:identity_file]}" if ICS.verbose?
-        ICS::Request.new(path, :sign => true).get.print
+        response = ICS::Request.new(path, :sign => true).get
+        if response.error?
+          case response.code
+          when /404/ then puts "ERROR Unrecognized API key"
+          when /401/ then puts "ERROR Signature does not match API key and query.  Is your secret key correct?"
+          else
+            nil                 # response gets printed anyway
+          end
+        end
+        response.print
       end
 
     end
