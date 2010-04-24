@@ -19,7 +19,7 @@ module ICS
     end
 
     def name
-      self.class.name
+      self.class.name.split('::').last
     end
     
     protected
