@@ -28,8 +28,7 @@ EOF
       end
 
       def execute!
-        response = Request.new(path, :data => {model.to_sym => data } , :authenticate => true).post
-        response.print if ICS.verbose?
+        Request.new(path, :data => {model.to_sym => data } , :authenticate => true).post.print
       end
       
     end
