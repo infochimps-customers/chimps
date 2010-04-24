@@ -1,8 +1,9 @@
 module ICS
   ICSError            = Class.new(StandardError)
-  AuthenticationError = Class.new(ICSError)
-  CLIError            = Class.new(ICSError)
-  ServerError         = Class.new(ICSError)
-  PackagingError      = Class.new(ICSError)
+  AuthenticationError = Class.new(ICSError) # 401 from server
+  CLIError            = Class.new(ICSError) # bad input from user
+  ServerError         = Class.new(ICSError) # 5xx from server
+  PackagingError      = Class.new(ICSError) # IMW error
+  UploadError         = Class.new(ICSError) # S3 error
 end
 
