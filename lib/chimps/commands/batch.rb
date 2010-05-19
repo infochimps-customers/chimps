@@ -1,13 +1,13 @@
-require 'ics/commands/base'
-require 'ics/utils/uses_curl'
-require 'ics/workflows/batch'
+require 'chimps/commands/base'
+require 'chimps/utils/uses_curl'
+require 'chimps/workflows/batch'
 require 'yaml'
 
-module ICS
+module Chimps
   module Commands
-    class Batch < ICS::Command
+    class Batch < Chimps::Command
 
-      BANNER = "usage: ics batch [OPTIONS] [INPUT_PATH] ..."
+      BANNER = "usage: chimps batch [OPTIONS] [INPUT_PATH] ..."
       HELP   = <<EOF
 
 Perform a batch operation on Infochimps by reading YAML input files.
@@ -30,7 +30,7 @@ The format of the YAML input files is given at
 EOF
       attr_accessor :output_file, :upload_even_if_errors
 
-      include ICS::UsesCurl
+      include Chimps::UsesCurl
 
       def define_options
         on_tail("-o", "--output PATH", "Store the response from the server at PATH") do |o|
@@ -43,7 +43,7 @@ EOF
       end
 
       def execute!
-        ICS::Workflows::BatchUpdater.new(data, :output_file => output_file, :upload_even_if_errors => upload_even_if_errors, :curl => curl?).execute!
+        Chimps::Workflows::BatchUpdater.new(data, :output_file => output_file, :upload_even_if_errors => upload_even_if_errors, :curl => curl?).execute!
       end
       
 

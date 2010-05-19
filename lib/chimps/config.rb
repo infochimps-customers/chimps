@@ -1,10 +1,10 @@
 require 'yaml'
-module ICS
+module Chimps
 
-  # Configuration for ics lives here.
+  # Configuration for chimps lives here.
   CONFIG = {
-    :host          => ENV["ICS_HOST"] || 'http://infochimps.org',
-    :identity_file => File.expand_path("~/.ics"),
+    :host          => ENV["Chimps_HOST"] || 'http://infochimps.org',
+    :identity_file => File.expand_path("~/.chimps"),
     :verbose       => nil,
     :timestamp_format => "%Y-%m-%d_%H-%M-%S"
   }
@@ -14,12 +14,12 @@ module ICS
   end
 
   def self.username
-    CONFIG[:username] or raise AuthorizationError.new("No username set in #{ICS::CONFIG[:identity_file]}")
+    CONFIG[:username] or raise AuthenticationError.new("No username set in #{Chimps::CONFIG[:identity_file]}")
   end
 
   module Config
 
-    def self.ics_root
+    def self.chimps_root
       File.expand_path File.join(File.dirname(__FILE__), '../..')
     end
 

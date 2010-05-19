@@ -1,8 +1,8 @@
-module ICS
+module Chimps
   class Command < OptionParser
 
-    BANNER = "Define #{self}::BANNER when you subclass ICS::Command"
-    HELP   = "Define #{self}::HELP when you subclass ICS::Command"
+    BANNER = "Define #{self}::BANNER when you subclass Chimps::Command"
+    HELP   = "Define #{self}::HELP when you subclass Chimps::Command"
 
     attr_reader :argv
 
@@ -11,7 +11,7 @@ module ICS
       @argv = argv
       run_options_definers
       parse_command_line!
-      ICS::Config.load
+      Chimps::Config.load
     end
 
     def self.name
@@ -27,7 +27,7 @@ module ICS
       begin
         parse!(argv)
       rescue OptionParser::InvalidOption => e
-        raise CLIError.new("#{e.message}.  Try `ics help #{name}'")
+        raise CLIError.new("#{e.message}.  Try `chimps help #{name}'")
       end
     end
       
@@ -41,11 +41,11 @@ module ICS
       separator "\nOptions include:"
       
       on("-v", "--[no-]verbose", "Be verbose, or not.") do |v|
-        ICS::CONFIG[:verbose] = v
+        Chimps::CONFIG[:verbose] = v
       end
       
-      on("-i", "--identity-file PATH", "Use the given YAML identify file to authenticate with Infochimps instead of the default (~/.ics) ") do |i|
-        ICS::CONFIG[:identity_file] = File.expand_path(i)
+      on("-i", "--identity-file PATH", "Use the given YAML identify file to authenticate with Infochimps instead of the default (~/.chimps) ") do |i|
+        Chimps::CONFIG[:identity_file] = File.expand_path(i)
       end
     end
     

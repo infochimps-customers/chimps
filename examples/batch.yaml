@@ -21,7 +21,6 @@
 
 - dataset:
     # this dataset lacks an ID property so it will be created
-    id:
     title: expatriatoro
     description: |
       Just some description of my dataset

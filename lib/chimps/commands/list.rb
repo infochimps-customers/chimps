@@ -1,11 +1,11 @@
-require 'ics/commands/base'
-require 'ics/commands/uses_model'
+require 'chimps/commands/base'
+require 'chimps/commands/uses_model'
 
-module ICS
+module Chimps
   module Commands
-    class List < ICS::Command
+    class List < Chimps::Command
 
-      BANNER = "ics list [OPTIONS]"
+      BANNER = "chimps list [OPTIONS]"
       HELP   = <<EOF
 
 List resources of a given type (defaults to dataset).
@@ -15,7 +15,7 @@ Lists your resources by default but see options below.
 EOF
 
       MODELS = %w[dataset license]
-      include ICS::Commands::UsesModel
+      include Chimps::Commands::UsesModel
 
       def define_options
         on_tail("-a", "--all", "List all resources, not just those owned by you.") do |a|
@@ -28,7 +28,7 @@ EOF
       end
 
       def params
-        return { :id => ICS.username } unless all?
+        return { :id => Chimps.username } unless all?
       end
 
       def execute!

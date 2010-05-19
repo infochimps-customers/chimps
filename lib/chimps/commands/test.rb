@@ -1,25 +1,25 @@
-require 'ics/commands/base'
-require 'ics/request'
+require 'chimps/commands/base'
+require 'chimps/request'
 
-module ICS
+module Chimps
   module Commands
-    class Test < ICS::Command
+    class Test < Chimps::Command
 
-      BANNER = "usage: ics test"
+      BANNER = "usage: chimps test"
       HELP = <<EOF
 
-Print diagnostic information on the API credentials being used by ics
+Print diagnostic information on the API credentials being used by chimps
 and send a test request to Infochimps to make sure the API credentials
 work.
 
 EOF
       def path
-        "api_accounts/#{ICS::CONFIG[:api_key]}"
+        "api_accounts/#{Chimps::CONFIG[:api_key]}"
       end
       
       def execute!
-        puts "Reading identity file at #{CONFIG[:identity_file]}" if ICS.verbose?
-        response = ICS::Request.new(path, :sign => true).get
+        puts "Reading identity file at #{CONFIG[:identity_file]}" if Chimps.verbose?
+        response = Chimps::Request.new(path, :sign => true).get
         if response.error?
           case response.code
           when /404/ then puts "ERROR Unrecognized API key"

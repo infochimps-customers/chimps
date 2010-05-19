@@ -1,12 +1,12 @@
-require 'ics/utils'
-require 'ics/utils/uses_curl'
-require 'ics/request'
+require 'chimps/utils'
+require 'chimps/utils/uses_curl'
+require 'chimps/request'
 
-module ICS
+module Chimps
   module Workflows
     class Uploader
 
-      include ICS::UsesCurl
+      include Chimps::UsesCurl
 
       attr_reader :dataset, :archive_path, :local_paths, :token, :archive
 
@@ -29,11 +29,11 @@ module ICS
       # Paths, both local and remote
       #
       def readme_path
-        File.join(ICS::CONFIG[:host], "/README-infochimps")
+        File.join(Chimps::CONFIG[:host], "/README-infochimps")
       end
 
-      def icss_path
-        File.join(ICS::CONFIG[:host], "datasets", "#{dataset}.yaml")
+      def chimpss_path
+        File.join(Chimps::CONFIG[:host], "datasets", "#{dataset}.yaml")
       end
 
       def input_paths
@@ -51,7 +51,7 @@ module ICS
 
       def default_archive_path
         # in current working directory...
-        "ics_#{dataset}-#{Time.now.strftime(ICS::CONFIG[:timestamp_format])}.zip"
+        "chimps_#{dataset}-#{Time.now.strftime(Chimps::CONFIG[:timestamp_format])}.zip"
       end
       
       #
@@ -82,7 +82,7 @@ module ICS
 
       def archiver
         require 'imw'        
-        @archiver ||= IMW::Packagers::Archiver.new(archive_name, input_paths)
+        @archiver ||= IMW::Tools::Archiver.new(archive_name, input_paths)
       end
 
       def create_archive!
@@ -98,7 +98,7 @@ module ICS
       def ask_for_token!
         @token = Request.new(token_path, :signed => true).get
         if @token.error?
-          @token.print if ICS.verbose?
+          @token.print if Chimps.verbose?
           raise AuthenticationError.new("Unable to secure upload token from Infochimps")
         end
       end
@@ -122,9 +122,9 @@ module ICS
       end
 
       def upload_with_curl!
-        progress_meter = ICS.verbose? ? '' : '-s -S'
+        progress_meter = Chimps.verbose? ? '' : '-s -S'
         command = "#{curl} #{progress_meter} -o /dev/null -X POST #{token_data_for_curl} #{token['url']}"
-        puts command if ICS.verbose?
+        puts command if Chimps.verbose?
         puts_and_again("Uploading #{archive_path} to Infochimps...", "done") do
           raise UploadError.new("Failed to upload #{archive_path} to Infochimps") unless system(command)
         end
@@ -137,7 +137,7 @@ module ICS
         begin
           # Use RestClient directly as we're talking to AWS and
           # they'll return some weird XML instead of the nice JSON
-          # which comes back from ICS
+          # which comes back from Chimps
           @upload_response = RestClient.post(token['url'], token_data_for_rest_client, :multipart => true, :content_type => 'multipart/form-data')
         rescue RestClient::Exception => e
           puts "#{e.http_code} -- #{e.message}"

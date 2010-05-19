@@ -1,6 +1,6 @@
-require 'ics/config'
-require 'ics/utils/extensions'
-require 'ics/utils/error'
+require 'chimps/config'
+require 'chimps/utils/extensions'
+require 'chimps/utils/error'
 
 def puts_and_again opening, closing, options={}, &block
   options[:if] = true unless options.has_key?(:if)

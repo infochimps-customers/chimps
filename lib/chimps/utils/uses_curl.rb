@@ -1,4 +1,4 @@
-module ICS
+module Chimps
 
   module UsesCurl
 

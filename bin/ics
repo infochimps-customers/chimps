@@ -1,3 +1,0 @@
-#!/usr/bin/env ruby
-require "ics/cli"
-ICS::CLI.execute!(ARGV.dup) if $0 == __FILE__

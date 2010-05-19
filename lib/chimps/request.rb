@@ -2,10 +2,10 @@ require 'cgi'
 require 'digest/md5'
 require 'restclient'
 
-require 'ics/response'
-require 'ics/utils'
+require 'chimps/response'
+require 'chimps/utils'
 
-module ICS
+module Chimps
 
   class Request < RestClient::Resource
 
@@ -29,12 +29,12 @@ module ICS
     alias_method :sign?, :authenticate?
 
     def authenticable?
-      !ICS::CONFIG[:api_key].blank? && !ICS::CONFIG[:api_secret].blank?
+      !Chimps::CONFIG[:api_key].blank? && !Chimps::CONFIG[:api_secret].blank?
     end
     alias_method :signable?, :authenticable?
 
     def url_with_query_string
-      base_url = File.join(ICS::CONFIG[:host], path)
+      base_url = File.join(Chimps::CONFIG[:host], path)
       base_url += "?#{query_string}" unless query_string.blank?
       base_url
     end
@@ -45,29 +45,29 @@ module ICS
 
     def get options={}
       handle_exceptions do
-        puts "GET #{url}" if ICS.verbose?
-        ICS::Response.new(super(CONTENT_TYPE.merge(options)))
+        puts "GET #{url}" if Chimps.verbose?
+        Chimps::Response.new(super(CONTENT_TYPE.merge(options)))
       end
     end
 
     def post options={}
       handle_exceptions do
-        puts "POST #{url}" if ICS.verbose?
-        ICS::Response.new(super(data_text, CONTENT_TYPE.merge(options)))
+        puts "POST #{url}" if Chimps.verbose?
+        Chimps::Response.new(super(data_text, CONTENT_TYPE.merge(options)))
       end
     end
 
     def put options={}
       handle_exceptions do
-        puts "PUT #{url}" if ICS.verbose?
-        ICS::Response.new(super(data_text, CONTENT_TYPE.merge(options)))
+        puts "PUT #{url}" if Chimps.verbose?
+        Chimps::Response.new(super(data_text, CONTENT_TYPE.merge(options)))
       end
     end
 
     def delete options={}
       handle_exceptions do
-        puts "DELETE #{url}" if ICS.verbose?
-        ICS::Response.new(super(CONTENT_TYPE.merge(options)))
+        puts "DELETE #{url}" if Chimps.verbose?
+        Chimps::Response.new(super(CONTENT_TYPE.merge(options)))
       end
     end
     
@@ -82,9 +82,9 @@ module ICS
     
     def authenticate_if_necessary!
       return unless authenticate?
-      raise ICS::AuthenticationError.new("API key or secret missing from #{CONFIG[:identity_file]}") unless (authenticable? || @forgive_authentication_error)
+      raise Chimps::AuthenticationError.new("API key or secret missing from #{CONFIG[:identity_file]}") unless (authenticable? || @forgive_authentication_error)
       query_params[:requested_at] = Time.now.to_i.to_s
-      query_params[:api_key]      = ICS::CONFIG[:api_key]
+      query_params[:api_key]      = Chimps::CONFIG[:api_key]
     end
 
     def alphabetical_params
@@ -113,7 +113,7 @@ module ICS
     # Sign +string+ by concatenting it with the secret and computing
     # the MD5 digest of the whole thing.
     def sign string
-      raise ICS::AuthenticationError.new("No API secret stored in #{CONFIG[:identity_file]}.") unless (authenticable? || @forgive_authentication_error)
+      raise Chimps::AuthenticationError.new("No API secret stored in #{CONFIG[:identity_file]}.") unless (authenticable? || @forgive_authentication_error)
       Digest::MD5.hexdigest(string + CONFIG[:api_secret])
     end
 

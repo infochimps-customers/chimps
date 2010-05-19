@@ -1,13 +1,13 @@
-require 'ics/commands/base'
-require 'ics/request'
-require 'ics/commands/uses_model'
-require 'ics/commands/uses_key_value_data'
+require 'chimps/commands/base'
+require 'chimps/request'
+require 'chimps/commands/uses_model'
+require 'chimps/commands/uses_key_value_data'
 
-module ICS
+module Chimps
   module Commands
-    class Update < ICS::Command
+    class Update < Chimps::Command
 
-      BANNER = "usage: ics update [OPTIONS] ID_OR_HANDLE [PROP=VALUE] ..."
+      BANNER = "usage: chimps update [OPTIONS] ID_OR_HANDLE [PROP=VALUE] ..."
       HELP   = <<EOF
 
 Updates a single resource of a given type (defaults to dataset)
@@ -20,8 +20,8 @@ EOF
 
       # Models this command applies to (default first)
       MODELS = %w[dataset source license]
-      include ICS::Commands::UsesModel
-      include ICS::Commands::UsesKeyValueData
+      include Chimps::Commands::UsesModel
+      include Chimps::Commands::UsesKeyValueData
 
       def execute!
         Request.new(model_path, :data => {model.to_sym => data } , :authenticate => true).put.print

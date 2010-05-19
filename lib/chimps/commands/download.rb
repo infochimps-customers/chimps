@@ -1,10 +1,10 @@
-require 'ics/commands/base'
+require 'chimps/commands/base'
 
-module ICS
+module Chimps
   module Commands
-    class Download < ICS::Command
+    class Download < Chimps::Command
 
-      BANNER = "usage: ics download [OPTIONS] ID_OR_HANDLE"
+      BANNER = "usage: chimps download [OPTIONS] ID_OR_HANDLE"
       HELP   = <<EOF
 
 Download a dataset identified by the given ID_OR_HANDLE to the current
@@ -61,7 +61,7 @@ EOF
 
       def download_with_curl!
         command = "#{curl} -o '#{output}' '#{download_url}'"
-        puts command if ICS.verbose?
+        puts command if Chimps.verbose?
         system(command)
       end
       

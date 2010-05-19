@@ -1,13 +1,13 @@
-require 'ics/commands/base'
-require 'ics/commands/uses_model'
-require 'ics/request'
+require 'chimps/commands/base'
+require 'chimps/commands/uses_model'
+require 'chimps/request'
 
-module ICS
+module Chimps
   module Commands
 
-    class Show < ICS::Command
+    class Show < Chimps::Command
 
-      BANNER = "usage: ics show [OPTIONS] ID_OR_HANDLE"
+      BANNER = "usage: chimps show [OPTIONS] ID_OR_HANDLE"
       HELP   = <<EOF
 
 Return a description of the resource (defaults to dataset) with the
@@ -16,10 +16,10 @@ EOF
 
       # Models this command applies to (default first)
       MODELS = %w[dataset collection source license tag category]
-      include ICS::Commands::UsesModel
+      include Chimps::Commands::UsesModel
 
       def execute!
-        ICS::Request.new(model_path).get.print
+        Chimps::Request.new(model_path).get.print
       end
 
     end

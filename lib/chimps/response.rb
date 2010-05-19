@@ -1,12 +1,12 @@
 require 'yaml'
 require 'json'
 require 'restclient'
-require 'ics/pretty_printers'
+require 'chimps/pretty_printers'
 
-module ICS
+module Chimps
 
   class Response < Hash
-    include ICS::PrettyPrinters
+    include Chimps::PrettyPrinters
 
     attr_reader :code, :headers, :body, :error_message
 
@@ -21,7 +21,7 @@ module ICS
         begin
           data = content_type == :yaml ? YAML.parse(body) : JSON.parse(body)
           # hack...sometimes we get back an array instead of a
-          # hash...should change the API at ICS end
+          # hash...should change the API at Chimps end
           case data            
           when Hash   then merge!(data)
           when Array  then self[:list]   = data # see corresponding pretty printers
@@ -29,7 +29,7 @@ module ICS
           else
           end
         rescue YAML::ParseError, JSON::ParserError => e
-          puts body.inspect if ICS.verbose?
+          puts body.inspect if Chimps.verbose?
           $stdout.puts("WARNING: Unable to parse response from server")
         end
       end
@@ -56,7 +56,7 @@ module ICS
     def print
       first_line = "#{code.to_s} -- "
       first_line += (success? ? "SUCCESS" : error_message)
-      puts first_line if ICS.verbose? || error?
+      puts first_line if Chimps.verbose? || error?
       puts pretty_print(self).join("\n")
     end
 

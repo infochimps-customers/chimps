@@ -1,13 +1,13 @@
-require 'ics/commands/base'
-require 'ics/request'
-require 'ics/commands/uses_model'
-require 'ics/commands/uses_key_value_data'
+require 'chimps/commands/base'
+require 'chimps/request'
+require 'chimps/commands/uses_model'
+require 'chimps/commands/uses_key_value_data'
 
-module ICS
+module Chimps
   module Commands
-    class Create < ICS::Command
+    class Create < Chimps::Command
 
-      BANNER = "usage: ics create [OPTIONS] [PROP=VALUE] ..."
+      BANNER = "usage: chimps create [OPTIONS] [PROP=VALUE] ..."
       HELP   = <<EOF
 
 Create a single resource (defaults to dataset) using the properties
@@ -20,8 +20,8 @@ EOF
 
       # Models this command applies to (default first)
       MODELS = %w[dataset source license]
-      include ICS::Commands::UsesModel
-      include ICS::Commands::UsesKeyValueData
+      include Chimps::Commands::UsesModel
+      include Chimps::Commands::UsesKeyValueData
 
       def path
         model + 's.json'

@@ -1,12 +1,12 @@
-require 'ics/commands/base'
-require 'ics/request'
-require 'ics/commands/uses_model'
+require 'chimps/commands/base'
+require 'chimps/request'
+require 'chimps/commands/uses_model'
 
-module ICS
+module Chimps
   module Commands
-    class Destroy < ICS::Command
+    class Destroy < Chimps::Command
 
-      BANNER = "usage: ics destroy [OPTIONS] ID_OR_HANDLE"
+      BANNER = "usage: chimps destroy [OPTIONS] ID_OR_HANDLE"
       HELP   = <<EOF
 
 Destroys a resource of a given type (defaults to dataset) identified
@@ -16,7 +16,7 @@ EOF
 
       # Models this command applies to (default first)
       MODELS = %w[dataset package source license]
-      include ICS::Commands::UsesModel
+      include Chimps::Commands::UsesModel
 
       def execute!
         Request.new(model_path, :authenticate => true).delete.print

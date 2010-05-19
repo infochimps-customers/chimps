@@ -1,26 +1,26 @@
-require 'ics/commands/base'
-require 'ics/utils/uses_curl'
-require 'ics/workflows/uploader'
+require 'chimps/commands/base'
+require 'chimps/utils/uses_curl'
+require 'chimps/workflows/uploader'
 
-module ICS
+module Chimps
   module Commands
 
-    class Upload < ICS::Command
+    class Upload < Chimps::Command
 
-      BANNER = "usage: ics upload [OPTIONS] ID_OR_HANDLE PATH [PATH] ..."
+      BANNER = "usage: chimps upload [OPTIONS] ID_OR_HANDLE PATH [PATH] ..."
       HELP   = <<EOF
 
 Upload data from your local machine for an existing dataset identified
 by ID_OR_HANDLE on Infochimps.
 
-ics will package all paths supplied into a local archive and then
+chimps will package all paths supplied into a local archive and then
 upload this archive to Infochimps.  The local archive defaults to a
 sensible name in the current directory but can also be customized.
 EOF
 
       attr_reader :user_defined_archive_path
 
-      include ICS::UsesCurl
+      include Chimps::UsesCurl
 
       def define_upload_options
         on_tail("-a", "--archive-path", "Path to the archive to be created.  Defaults to a timestamped ZIP file named after the dataset in the current directory.") do |path|
@@ -28,7 +28,7 @@ EOF
         end
       end
       def execute!
-        ICS::Workflows::Uploader.new(:dataset => dataset, :archive_path => user_defined_archive_path, :local_paths => local_paths, :curl => curl?).execute!.print
+        Chimps::Workflows::Uploader.new(:dataset => dataset, :archive_path => user_defined_archive_path, :local_paths => local_paths, :curl => curl?).execute!.print
       end
 
       #

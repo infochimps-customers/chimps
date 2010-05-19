@@ -1,10 +1,10 @@
-require 'ics/commands/base'
+require 'chimps/commands/base'
 
-module ICS
+module Chimps
   module Commands
-    class Help < ICS::Command
+    class Help < Chimps::Command
 
-      BANNER = "usage: ics help [COMMAND]"
+      BANNER = "usage: chimps help [COMMAND]"
       HELP = <<EOF
 
 This is the Infochimps command-line client.  You can use it to search,
@@ -25,36 +25,36 @@ Learn more about the Infochimps API which powers this tool at
 
 = Commands
 
-ics is a wrapper over the RESTful Infochimps API.  It exposes the
+chimps is a wrapper over the RESTful Infochimps API.  It exposes the
 following actions
 
-  ics list
-  ics show
-  ics create
-  ics update
-  ics destroy
+  chimps list
+  chimps show
+  chimps create
+  chimps update
+  chimps destroy
 
 for datasets (as well as other selected resources).  It also helps
 automate the workflow of uploading data and making batch changes with
 
-  ics upload
-  ics batch
+  chimps upload
+  chimps batch
 
 you can also test that your system is configured properly and that you
 can authenticate with Infochimps with
 
-  ics test  
+  chimps test  
 
 If you're confused try running
 
-  ics help COMMAND
+  chimps help COMMAND
 
 for any of the commands above.
 
 = Setup
 
 Once you've obtained an API key and secret from Infochimps, place them
-in a file ICS::CONFIG[:identity_file] in your home directory with the
+in a file Chimps::CONFIG[:identity_file] in your home directory with the
 following format
 
   --- 
@@ -68,7 +68,7 @@ EOF
         if argv.first.blank?
           puts self
         else
-          puts ICS::Commands.construct(argv.first, [])
+          puts Chimps::Commands.construct(argv.first, [])
         end
       end
 

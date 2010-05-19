@@ -1,15 +1,15 @@
-require 'ics/commands/base'
-require 'ics/request'
-require 'ics/commands/uses_model'
+require 'chimps/commands/base'
+require 'chimps/request'
+require 'chimps/commands/uses_model'
 
-module ICS
+module Chimps
   module Commands
-    class Search < ICS::Command
+    class Search < Chimps::Command
 
       # Default number of search results returned.
       DEFAULT_LIMIT  = 20
       
-      BANNER = "usage: ics search [OPTIONS] QUERY"
+      BANNER = "usage: chimps search [OPTIONS] QUERY"
       HELP   = <<EOF
 
 Perform a search on Infochimps.  By default the search will be of
@@ -22,7 +22,7 @@ EOF
       
       # Models this command applies to (default first)
       MODELS = %w[dataset collection source license field]
-      include ICS::Commands::UsesModel
+      include Chimps::Commands::UsesModel
 
 
       def limit
@@ -50,7 +50,7 @@ EOF
       end
 
       def execute!
-        ICS::Request.new(PATH, :params => params).get.print
+        Chimps::Request.new(PATH, :params => params).get.print
       end
     end
   end

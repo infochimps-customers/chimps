@@ -1,12 +1,12 @@
-require 'ics/request'
-require 'ics/utils/uses_curl'
-require 'ics/workflows/uploader'
+require 'chimps/request'
+require 'chimps/utils/uses_curl'
+require 'chimps/workflows/uploader'
 
-module ICS
+module Chimps
   module Workflows
     class BatchUpdater
 
-      include ICS::UsesCurl
+      include Chimps::UsesCurl
 
       PATH = "batch.json"
 
@@ -46,7 +46,7 @@ module ICS
         if success? || upload_even_if_errors
           $stderr.puts("WARNING: continuing with uploads even though there were errors") if error?
           dataset_ids_and_local_paths.each do |id, local_paths|
-            upload_response = ICS::Workflows::Uploader.new(:dataset => id, :local_paths => local_paths, :curl => curl?).execute!
+            upload_response = Chimps::Workflows::Uploader.new(:dataset => id, :local_paths => local_paths, :curl => curl?).execute!
             upload_response.print if upload_response.error?
           end
         end

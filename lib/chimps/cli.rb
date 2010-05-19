@@ -1,14 +1,14 @@
 require 'optparse'
-require 'ics'
-require 'ics/utils'
+require 'chimps'
+require 'chimps/utils'
 
-module ICS
+module Chimps
   module CLI
 
     def self.execute! argv
       begin
         Runner.new(argv).execute!    
-      rescue ICSError => e
+      rescue ChimpsError => e
         puts e.message
         exit 1
       rescue => e
@@ -19,7 +19,7 @@ module ICS
     end
     
     class Runner
-      include ICS::Commands
+      include Chimps::Commands
 
       attr_reader :argv
 
@@ -44,7 +44,7 @@ module ICS
             break
           end
         end
-        @command_index or raise CLIError.new("Must specify a command.  Try running `ics help'")
+        @command_index or raise CLIError.new("Must specify a command.  Try running `chimps help'")
       end
 
       def command_name

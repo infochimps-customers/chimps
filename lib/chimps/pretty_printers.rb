@@ -1,6 +1,6 @@
 # this whole file is a waste of time.  i wish the yaml api worked.
 
-module ICS
+module Chimps
 
   module PrettyPrinters
 
@@ -13,7 +13,7 @@ module ICS
             lines.concat(send(method, data, options))
           else
             $stderr.puts("WARNING: Unknown object #{object_name} in server response")
-            $stderr.puts data.inspect if ICS.verbose?
+            $stderr.puts data.inspect if Chimps.verbose?
           end
         end
       end
@@ -79,7 +79,7 @@ module ICS
 
     def pretty_print_dataset data, options={}
       if options[:single_line]
-        [[data['id'], data['updated_at'], data['main_link'], data['title']].join("\t")]
+        [[data['id'], data['cached_slug'], data['updated_at'], data['main_link'], data['title']].join("\t")]
       else
         returning([]) do |lines|
           lines << "DATASET #{data['id']}"
