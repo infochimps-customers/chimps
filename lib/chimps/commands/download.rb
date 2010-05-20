@@ -44,15 +44,15 @@ EOF
       end
       
       # The ID of the package to download.
-      def dataset_identifier
-        raise CLIError.new("Must provide an ID_OR_HANDLE of a dataset to download.") if argv.first.blank?
+      def dataset
+        raise CLIError.new("Must provide an ID or handle of a dataset to download.") if argv.first.blank?
         argv.first
       end
 
       # Issue the request for the token and the request for the
       # download.
       def execute!
-        Chimps::Workflows::Downloader.new(:dataset_id => dataset_identifier, :fmt => fmt, :pkg_fmt => pkg_fmt, :local_path => local_path).execute!
+        Chimps::Workflows::Downloader.new(:dataset => dataset, :fmt => fmt, :pkg_fmt => pkg_fmt, :local_path => local_path).execute!
       end
 
       def define_options

@@ -1,11 +1,29 @@
 module Chimps
   module Workflows
+
+    # Uploads data to Infochimps by first asking for authorization,
+    # creating an archive, obtaining a token, uploading data, and
+    # notifing Infochimps.
     class Uploader
 
       include Chimps::Utils::UsesCurl
 
-      attr_reader :dataset, :archive_path, :local_paths, :token, :archive
+      # The ID or handle of the dataset to download.
+      attr_reader :dataset
 
+      # An array of paths to local files and directories to package
+      # into an archive.
+      attr_reader :local_paths
+      
+      # The archive to upload.
+      attr_reader :archive
+      
+      # The token authoring an upload.
+      attr_reader :token
+
+      # Upload data to Infochimps by first asking for authorization,
+      # creating an archive, obtaining a token, uploading data, and
+      # notifing Infochimps.
       def execute!
         authorize_for_upload!
         create_archive!
@@ -14,140 +32,186 @@ module Chimps
         notify_infochimps!
       end
 
+      # Create a new Uploader from the given parameters.
+      #
+      # @param [Hash] options
+      # @option options [String, Integer] dataset the ID or handle of the dataset to which data should be uploaded
+      # @option options [Array<String>] local_paths the local paths to bundle into an archive      
+      # @option options [String, IMW::Resource] archive the path to the archive to create (defaults to IMW::Workflows::Downloader#default_archive_path)
       def initialize options={}
-        @dataset      = options[:dataset]
-        @archive_path = File.expand_path(options[:archive] || default_archive_path)
-        @local_paths  = options[:local_paths]
-        @curl         = options[:curl]
+        require 'imw'
+        IMW.verbose      = Chimps.verbose?
+        @dataset         = options[:dataset] or raise PackagingError.new("Must provide the ID or handle of a dataset to upload data to.")
+        self.local_paths = options[:local_paths]   # must come before self.archive=
+        self.archive     = options[:archive]
       end
 
+      # Set the local paths to upload for this dataset.
       #
-      # Paths, both local and remote
+      # If only one local path is given and it is already an archive
+      # or a compressed file then no further packaging will be done by
+      # this uploader.
       #
-      def readme_path
-        File.join(Chimps::CONFIG[:host], "/README-infochimps")
+      # @param [Array<String, IMW::Resource>] paths
+      def local_paths= paths
+        raise PackagingError.new("Must provide at least one local path to upload.") if paths.blank?
+        @local_paths = paths
+        if @local_paths.size == 1
+          potential_package = IMW.open(paths.first)
+          if potential_package.exist? && (potential_package.is_compressed? || potential_package.is_archive?)
+            self.archive = potential_package
+            @skip_packaging = true
+          end
+        end
       end
 
-      def chimpss_path
-        File.join(Chimps::CONFIG[:host], "datasets", "#{dataset}.yaml")
+      # Should the packaging step be skipped?
+      #
+      # This will happen if only one local input path was provided and
+      # it exists and is a compressed file or archive.
+      #
+      # @return [true, false]
+      def skip_packaging?
+        !! @skip_packaging
       end
 
-      def input_paths
-        raise PackaginError.new("Must specify some local paths to package") if local_paths.blank?
-        local_paths + [readme_path, icss_path]
+      # Set the path to the archive that will be built.
+      #
+      # The given +path+ must represent a compressed file or archive
+      # (<tt>.tar</tt>, <tt>.tar.gz.</tt>, <tt>.tar.bz2</tt>,
+      # <tt>.zip</tt>, <tt>.rar</tt>, <tt>.bz2</tt>, or <tt>.gz</tt>
+      # extension).
+      #
+      # Additionally, if multiple local paths are being packaged, the
+      # given +path+ must be an archive (not simply <tt>.bz2</tt> or
+      # <tt>.gz</tt> extensions).
+      #
+      # @param [String, IMW::Resource] path the archive or path to use
+      def archive= path=nil
+        return @archive if @archive
+        potential_package = IMW.open(path || default_archive_path)
+        raise PackagingError.new("Invalid path #{potential_package}, not an archive or compressed file")        unless potential_package.is_compressed? ||  potential_package.is_archive?
+        raise PackagingError.new("Multiple local paths must be packaged in an archive, not a compressed file.") if     local_paths.size > 1             && !potential_package.is_archive?
+        @archive = potential_package
       end
 
-      def token_path
-        "/datasets/#{dataset}/packages/new.json"
-      end
-
-      def package_post_path
-        "/datasets/#{dataset}/packages.json"
-      end
-
+      # The default path to the archive that will be built.
+      #
+      # Defaults to a ZIP file in the current directory named after
+      # the +dataset+'s ID or handle and the current time.
+      #
+      # @return [String]
       def default_archive_path
         # in current working directory...
         "chimps_#{dataset}-#{Time.now.strftime(Chimps::CONFIG[:timestamp_format])}.zip"
       end
+
+      # The URL to the <tt>README-infochimps</tt> file on Infochimps'
+      # servers.
+      #
+      # @return [String]
+      def readme_url
+        File.join(Chimps::CONFIG[:host], "/README-infochimps")
+      end
+
+      # The URL to the ICSS file for this dataset on Infochimps
+      # servers
+      def icss_url
+        File.join(Chimps::CONFIG[:host], "datasets", "#{dataset}.yaml")
+      end
+
+      # Both the local paths and remote paths to package.
+      #
+      # @return [Array<String>]
+      def input_paths
+        raise PackaginError.new("Must specify some local paths to package") if local_paths.blank?
+        local_paths + [readme_url, icss_url]
+      end
       
+      # The path on Infochimps to submit upload token requests to.
       #
-      # FIXME IMW should make these methods unnecessary
-      #
-      def archive_name
-        basename = File.basename(archive_path)
-        return $1 if basename =~ /^(.+)\.tar\.bz2$/ || basename =~ /^(.*)\.tar\.gz$/
-        return $1 if basename =~ /^(.+)\.zip/
-        raise PackagingError.new("Invalid archive path #{archive_path}.  Must be a .zip, .tar.bz2, or .tar.gz file.")
+      # @return [String]
+      def token_path
+        "/datasets/#{dataset}/packages/new.json"
       end
 
-      def archive_format
-        basename = File.basename(archive_path)
-        return $1 if basename =~ /\.(tar\.bz2)$/
-        return $1 if basename =~ /\.(tar\.gz)$/
-        return $1 if basename =~ /\.(zip)$/
-        raise PackagingError.new("Invalid archive path #{archive_path}.  Must be a .zip, .tar.bz2, or .tar.gz file.")
+      # The path on Infochimps to submit package creation requests to.
+      #
+      # @return [String]
+      def package_creation_path
+        "/datasets/#{dataset}/packages.json"
       end
 
+      # Return a hash of params for obtaining a new upload token.
       #
-      # Workflow
-      #
+      # @return [Hash]
+      def package_params
+        { :package => { :fmt => 'csv', :pkg_fmt => archive.extension } }
+      end
+
+      # Authorize the Chimps user for this upload.
       def authorize_for_upload!
         # FIXME we're actually just making a token request here...
         ask_for_token!
       end
 
-      def archiver
-        require 'imw'        
-        @archiver ||= IMW::Tools::Archiver.new(archive_name, input_paths)
-      end
-
-      def create_archive!
-        puts_and_again("Creating archive...", "done") do
-          @archive = archiver.package!(archive_path)
-        end
-        raise PackagingError.new("Unable to package files for upload.  Temporary files left in #{archiver.tmp_dir}") if archive.is_a?(RuntimeError) || (not archiver.success?)
-        puts_and_again("Removing temporary files from #{archiver.tmp_dir}...", "done") do
-          archiver.clean!
+      # Obtain an upload token from Infochimps.
+      def ask_for_token!
+        new_token = Request.new(token_path, :params => package_params, :signed => true).get
+        if new_token.error?
+          new_token.print
+          raise AuthenticationError.new("Unauthorized for an upload token for dataset #{dataset}")
+        else
+          @token = new_token
         end
       end
       
-      def ask_for_token!
-        @token = Request.new(token_path, :signed => true).get
-        if @token.error?
-          @token.print if Chimps.verbose?
-          raise AuthenticationError.new("Unable to secure upload token from Infochimps")
-        end
+      # Build the local archive if necessary.
+      #
+      # Will not build the local archive if there was only one local
+      # input path and it was already compressed or an archive.
+      def create_archive!
+        return if skip_packaging?
+        archiver = IMW::Tools::Archiver.new(archive.name, input_paths)
+        result   = archiver.package(archive.path)
+        raise PackagingError.new("Unable to package files for upload.  Temporary files left in #{archiver.tmp_dir}") if result.is_a?(RuntimeError) || (!archiver.success?)
+        archiver.clean!
       end
 
-      def token_data_for_rest_client
-        data = token.dup
-        data.delete('url')
-        data.delete('fmt')
-        data[:file] = File.new(archive_path)
-        data
-      end
-
-      def token_data_for_curl
+      # Return a string built from the granted upload token that can
+      # be fed to +curl+ in order to authenticate with and upload to
+      # Amazon.
+      #
+      # @return [String]
+      def upload_data
         data = ['AWSAccessKeyId', 'acl', 'key', 'policy', 'success_action_status', 'signature'].map { |param| "-F #{param}='#{token[param]}'" }
-        data << ["-F file=@#{archive_path}"]
+        data << ["-F file=@#{archive.path}"]
         data.join(' ')
       end
 
+      # Upload the data.
+      #
+      # Uses +curl+ for the transfer.
       def upload!
-        curl? ? upload_with_curl! : upload_with_rest_client!
-      end
-
-      def upload_with_curl!
         progress_meter = Chimps.verbose? ? '' : '-s -S'
-        command = "#{curl} #{progress_meter} -o /dev/null -X POST #{token_data_for_curl} #{token['url']}"
-        puts command if Chimps.verbose?
-        puts_and_again("Uploading #{archive_path} to Infochimps...", "done") do
-          raise UploadError.new("Failed to upload #{archive_path} to Infochimps") unless system(command)
-        end
+        command = "#{curl} #{progress_meter} -o /dev/null -X POST #{upload_data} #{token['url']}"
+        raise UploadError.new("Failed to upload #{archive.path} to Infochimps") unless IMW.system(command)
       end
 
-      def upload_with_rest_client!
-        puts "Uploading #{archive_path} to Infochimps..."
-        puts "POST #{token['url']}"         
-        puts "token_data: #{token_data_for_rest_client.inspect}"
-        begin
-          # Use RestClient directly as we're talking to AWS and
-          # they'll return some weird XML instead of the nice JSON
-          # which comes back from Chimps
-          @upload_response = RestClient.post(token['url'], token_data_for_rest_client, :multipart => true, :content_type => 'multipart/form-data')
-        rescue RestClient::Exception => e
-          puts "#{e.http_code} -- #{e.message}"
-          puts e.http_body unless e.http_body.blank?
-          raise UploadError.new("Failed to upload #{archive_path} to Infochimps") if @upload_response.code !~ /201/
-        end
+      # Return a hash of parameters used to create a new Package at
+      # Infochimps corresonding to the upload.
+      #
+      # @return [Hash]
+      def package_data
+        { :package => {:path => token['key'], :fmt => token['fmt'], :pkg_size => archive.size, :pkg_fmt => archive.extension} }
       end
 
-      def package_params
-        { :package => {:path => token['key'], :fmt => token['fmt'], :pkg_size => archive.size} }
-      end
-
+      # Make a final POST request to Infochimps, creating the final
+      # resource.
       def notify_infochimps!
-        @package_post_response = Request.new(package_post_path, :signed => true, :data => package_params).post
+        package_creation_response = Request.new(package_creation_path, :signed => true, :data => package_data).post
+        package_creation_response.print
+        raise UploadError.new("Unable to notify Infochimps of newly uploaded data.") if package_creation_response.error?
       end
       
     end

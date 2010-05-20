@@ -1,7 +1,5 @@
 require 'restclient'
 
-require 'chimps/response'
-
 module Chimps
 
   # A class to encapsulate requests made of Infochimps.
@@ -183,8 +181,8 @@ module Chimps
     #
     # @return [String]
     def unsigned_query_string
-      require 'cgi'
-      alphabetical_params.map { |key| "#{CGI::escape(key.to_s)}=#{CGI::escape(query_params[key.to_sym].to_s)}" }.join("&")
+      # alphabetical_params.map { |key| "#{CGI::escape(key.to_s)}=#{CGI::escape(query_params[key.to_sym].to_s)}" }.join("&") # doesn't flatten nested hashes properly
+      RestClient::Payload.generate(query_params)
     end
 
     # Return an unsigned query string for this request without the
