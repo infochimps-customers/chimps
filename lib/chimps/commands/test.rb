@@ -16,7 +16,7 @@ EOF
 
       # Path to submit test requests to.
       def path
-        "api_accounts/#{Chimps::CONFIG[:api_key]}"
+        "api_accounts/#{Chimps::CONFIG[:site][:key]}"
       end
 
       # Issue the request.

@@ -2,6 +2,8 @@ module Chimps
   module Utils
     module UsesYamlData
 
+      IGNORE_YAML_FILES_ON_COMMAND_LINE = false
+
       attr_reader :data_file
 
       def data
@@ -31,22 +33,36 @@ module Chimps
               d.merge!(obj)
             end
           end
-        else raise CLIERror.new("Unsuitable YAML data type #{data_type} -- can only combine Hashes and Arrays")
+        else raise CLIError.new("Unsuitable YAML data type #{data_type} -- can only combine Hashes and Arrays")
+        end
+      end
+
+      def params_from_command_line
+        returning([]) do |d|
+          argv.each do |arg|
+            next unless arg =~ /^(\w+) *=(.*)$/
+            name, value = $1.downcase.to_sym, $2.strip
+            d << { name => value } # always a hash
+          end
+        end
+      end
+            
+      def yaml_files_from_command_line
+        returning([]) do |d|
+          argv.each do |arg|
+            next if arg =~ /^(\w+) *=(.*)$/
+            path = File.expand_path(arg)
+            raise CLIError.new("No such path #{path}") unless File.exist?(path)
+            d << YAML.load(open(path)) # either a hash or an array
+          end
         end
       end
       
       def data_from_command_line
-        returning([]) do |d|
-          argv.each do |arg|
-            if arg =~ /^(\w+) *=(.*)$/
-              name, value = $1.downcase.to_sym, $2.strip
-              d << { name => value } # always a hash
-            else
-              path = File.expand_path(arg)
-              raise CLIError.new("No such path #{path}") unless File.exist?(path)
-              d << YAML.load(open(path)) # either a hash or an array
-            end
-          end
+        if self.class::IGNORE_YAML_FILES_ON_COMMAND_LINE
+          params_from_command_line
+        else
+          yaml_files_from_command_line + params_from_command_line
         end
       end
 

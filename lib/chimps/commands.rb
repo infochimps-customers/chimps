@@ -29,7 +29,7 @@ module Chimps
     # A list of all the commmand names defined by Chimps.  Each name
     # maps to a corresponding subclass of Chimps::Command living in
     # the Chimps::Commands module.
-    NAMES = %w[search help test create show update destroy upload list download batch]
+    NAMES = %w[search help test create show update destroy upload list download batch query]
     
     NAMES.each do |name|
       autoload name.capitalize.to_sym, "chimps/commands/#{name}"

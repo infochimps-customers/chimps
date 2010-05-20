@@ -66,16 +66,23 @@ module Chimps
     #
     # @return [true, false]
     def authenticable?
-      !Chimps::CONFIG[:api_key].blank? && !Chimps::CONFIG[:api_secret].blank?
+      !Chimps::CONFIG[:site][:key].blank? && !Chimps::CONFIG[:site][:secret].blank?
     end
     alias_method :signable?, :authenticable?
+
+    # The host to send requests to.
+    #
+    # @return [String]
+    def host
+      @host ||= ENV["CHIMPS_HOST"] || Chimps::CONFIG[:site][:host]
+    end
 
     # Return the URL for this request with the (signed, if necessary)
     # query string appended.
     #
     # @return [String]
     def url_with_query_string
-      base_url = File.join(Chimps::CONFIG[:host], path)
+      base_url = File.join(host, path)
       base_url += "?#{query_string}" unless query_string.blank?
       base_url
     end
@@ -165,7 +172,7 @@ module Chimps
       return unless authenticate?
       raise Chimps::AuthenticationError.new("API key or secret missing from #{CONFIG[:identity_file]}") unless (authenticable? || @forgive_authentication_error)
       query_params[:requested_at] = Time.now.to_i.to_s
-      query_params[:api_key]      = Chimps::CONFIG[:api_key]
+      query_params[:api_key]      = Chimps::CONFIG[:site][:key]
     end
 
     # Return the sorted keys of the query params.
@@ -215,7 +222,7 @@ module Chimps
     def sign string
       raise Chimps::AuthenticationError.new("No API secret stored in #{CONFIG[:identity_file]}.") unless (authenticable? || @forgive_authentication_error)
       require 'digest/md5'
-      Digest::MD5.hexdigest(string + CONFIG[:api_secret])
+      Digest::MD5.hexdigest(string + CONFIG[:site][:secret])
     end
 
     # Append the signature to the unsigned query string.
@@ -232,5 +239,64 @@ module Chimps
     end
 
   end
-end
 
+  # A class to encapsulate requests made against the Infochimps paid
+  # query API.
+  class QueryRequest < Request
+
+    # Is this request authentiable (has the Chimps user specified an
+    # API key and secret in their configuration file)?
+    #
+    # @return [true, false]
+    def authenticable?
+      !Chimps::CONFIG[:query][:key].blank? && !Chimps::CONFIG[:query][:secret].blank?
+    end
+
+    # The host to send requests to.
+    #
+    # @return [String]
+    def host
+      @host ||= ENV["CHIMPS_QUERY_HOST"] || Chimps::CONFIG[:query][:host]
+    end
+
+    # Authenticate this request by stuffing the <tt>:requested_at</tt>
+    # and <tt>:api_key</tt> properties into its <tt>:query_params</tt>
+    # hash.
+    #
+    # Will do nothing at all if Chimps::Request#authenticate? returns
+    # false.
+    def authenticate_if_necessary!
+      return unless authenticate?
+      raise Chimps::AuthenticationError.new("API key or secret missing from #{CONFIG[:identity_file]}") unless (authenticable? || @forgive_authentication_error)
+      query_params[:requested_at] = Time.now.to_i.to_s
+      query_params[:apikey]       = Chimps::CONFIG[:query][:key]
+    end
+
+    # Sign +string+ by concatenting it with the secret and computing
+    # the MD5 digest of the whole thing.
+    #
+    # @param [String]
+    # @return [String]
+    def sign string
+      raise Chimps::AuthenticationError.new("No API secret stored in #{CONFIG[:identity_file]}.") unless (authenticable? || @forgive_authentication_error)
+      require 'digest/md5'
+      Digest::MD5.hexdigest(string + CONFIG[:key][:secret])
+    end
+
+    # Append the signature to the unsigned query string.
+    #
+    # The signature made from the Chimps user's API secret and either
+    # the query string text (stripped of <tt>&</tt> and <tt>=</tt>)
+    # for GET and DELETE requests or the request body for POST and PUT
+    # requests.
+    #
+    # @return [String]
+    def signed_query_string
+      unsigned_query_string
+    end
+    
+    
+    
+  end
+
+end

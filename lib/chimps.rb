@@ -8,14 +8,15 @@ require 'chimps/utils'
 # metadata to and from Infochimps.
 module Chimps
 
-  autoload :Config,     'chimps/config'
-  autoload :CONFIG,     'chimps/config'
-  autoload :CLI,        'chimps/cli'
-  autoload :Command,    'chimps/commands/base'
-  autoload :Commands,   'chimps/commands'
-  autoload :Request,    'chimps/request'
-  autoload :Response,   'chimps/response'
-  autoload :Typewriter, 'chimps/typewriter'
-  autoload :Workflows,  'chimps/workflows'
+  autoload :Config,       'chimps/config'
+  autoload :CONFIG,       'chimps/config'
+  autoload :CLI,          'chimps/cli'
+  autoload :Command,      'chimps/commands/base'
+  autoload :Commands,     'chimps/commands'
+  autoload :Request,      'chimps/request'
+  autoload :QueryRequest, 'chimps/request'  
+  autoload :Response,     'chimps/response'
+  autoload :Typewriter,   'chimps/typewriter'
+  autoload :Workflows,    'chimps/workflows'
   
 end

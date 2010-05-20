@@ -33,15 +33,21 @@ following actions
   chimps destroy
 
 for datasets (as well as other selected resources).  It also helps
-automate the workflow of uploading data and making batch changes with
+automate the workflow of uploading and downloading data and making
+batch changes with
 
   chimps upload
+  chimps download
   chimps batch
 
-you can also test that your system is configured properly and that you
-can authenticate with Infochimps with
+You can also make queries against the Infochimps paid query API with
 
-  chimps test  
+  chimps query
+
+Finally, you can test that your system is configured properly and that
+you can authenticate with Infochimps with
+
+  chimps test
 
 If you're confused try running
 
@@ -51,15 +57,22 @@ for any of the commands above.
 
 = Setup
 
-Once you've obtained an API key and secret from Infochimps, place them
+Once you have obtained an API key and secret from Infochimps, place them
 in a file Chimps::CONFIG[:identity_file] in your home directory with the
 following format
 
-  --- 
-  username: your_user_name
-  api_key: oreeph6giedaeL3
-  api_secret: Queechei6cu8chiuyiig8cheg5Ahx0boolaizi1ohtarooFu1doo5ohj5ohp9eehae5hakoongahghohgoi7yeihohx1eidaeng0eaveefohchoh6WeeV1EM
+  ---
+  # API credentials for use on the main Infochimps site
+  :site:
+    :username: your_site_name
+    :key: oreeph6giedaeL3
+    :secret: Queechei6cu8chiuyiig8cheg5Ahx0boolaizi1ohtarooFu1doo5ohj5ohp9eehae5hakoongahghohgoi7yeihohx1eidaeng0eaveefohchoh6WeeV1EM
 
+  # API credentials for use on the Infochimps paid query API
+  :query:
+    :username: your_query_name
+    :key: zei7eeloShoah3Ce
+    :secret: eixairaichaxaaRe8eeya5moh8Uthahf0pi4eig7SoirohPhei6sai8aereu0yuepiefeipoozoegahchaeheedee8uphohoo9moongae8Fa0aih4BooSeiM
 EOF
       
       def execute!

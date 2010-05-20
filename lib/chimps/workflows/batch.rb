@@ -13,8 +13,6 @@ module Chimps
     # <tt>/examples</tt> directory of the Chimps distribution.
     class BatchUpdater
 
-      include Chimps::Utils::UsesCurl
-
       # The data used sent as a bulk update.
       attr_reader :data
 

@@ -1,10 +1,14 @@
-require 'yaml'
 module Chimps
 
   # Default configuration for Chimps.  User-specific configuration
   # usually lives in a YAML file <tt>~/.chimps</tt>.
   CONFIG = {
-    :host             => ENV["CHIMPS_HOST"] || 'http://infochimps.org',
+    :query => {
+      :host => 'http://api.infochimps.com'
+    },
+    :site => {
+      :host => 'http://infochimps.org'
+    },
     :identity_file    => File.expand_path(ENV["CHIMPS_RC"] || "~/.chimps"),
     :verbose          => nil,
     :timestamp_format => "%Y-%m-%d_%H-%M-%S"
@@ -21,7 +25,7 @@ module Chimps
   #
   # @return [String]
   def self.username
-    CONFIG[:username] or raise AuthenticationError.new("No username set in #{Chimps::CONFIG[:identity_file]}")
+    CONFIG[:site][:username] or raise AuthenticationError.new("No site username set in #{Chimps::CONFIG[:identity_file]}")
   end
 
   # Defines methods to load the Chimps configuration.
@@ -37,9 +41,15 @@ module Chimps
     # Load the configuration settings from the configuration/identity
     # file.
     def self.load
+      # FIXME this is a terrible hack...and it only goes to 2 deep!
       if File.exist?(CONFIG[:identity_file])
-        YAML.load_file(CONFIG[:identity_file]).each do |key, value|
-          CONFIG[key.to_sym] = value
+        require 'yaml'
+        YAML.load_file(CONFIG[:identity_file]).each_pair do |key, value|
+          if value.is_a?(Hash) && CONFIG.include?(key)
+            CONFIG[key].merge!(value)
+          else
+            CONFIG[key] = value
+          end
         end
       end
     end
