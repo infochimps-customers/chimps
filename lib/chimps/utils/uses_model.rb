@@ -29,8 +29,7 @@ module Chimps
       
       def model= model
         raise CLIError.new("Invalid model: #{model}.  Must be one of #{models_string}") unless self.class::MODELS.include?(model)
-        # FIXME hack!
-        @model = model == 'field' ? 'schema_field' : model
+        @model = model
       end
 
       def models_string
