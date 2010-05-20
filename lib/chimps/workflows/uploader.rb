@@ -55,6 +55,7 @@ module Chimps
       # @param [Array<String, IMW::Resource>] paths
       def local_paths= paths
         raise PackagingError.new("Must provide at least one local path to upload.") if paths.blank?
+        paths.each { |path| raise PackagingError.new("Invalid path, #{path}") unless File.exist?(File.expand_path(path)) }
         @local_paths = paths
         if @local_paths.size == 1
           potential_package = IMW.open(paths.first)
