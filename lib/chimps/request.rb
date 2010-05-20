@@ -17,7 +17,7 @@ module Chimps
       @path         = path
       @query_params = options[:query_params] || options[:params] || {}
       @data         = options[:data]         || {}
-      @authentication_required      = options[:authenticate] || options[:authenticated] || options[:sign] || options[:signed] || options[:sign_if_possible]
+      @authentication_required      = [:authenticate, :authenticated, :authenticate_if_possible, :sign, :signed, :sign_if_possible].any? { |key| options.include?(key) }
       @forgive_authentication_error = options[:sign_if_possible] || options[:authenticate_if_possible]
       authenticate_if_necessary!
       super url_with_query_string
