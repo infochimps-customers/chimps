@@ -1,87 +1,143 @@
-require 'yaml'
-require 'json'
-require 'restclient'
-require 'chimps/pretty_printers'
-
 module Chimps
 
+  # A class to wrap responses from the Infochimps API.
   class Response < Hash
-    include Chimps::PrettyPrinters
 
-    attr_reader :code, :headers, :body, :error_message
+    # The response body.
+    attr_reader :body
 
-    def initialize rest_client_obj
-      super      
-      deal_with_rest_client_bullshit(rest_client_obj)
+    # The error message for this response, if it was an error.
+    #
+    # This is actually generated within RestClient from the HTTP
+    # status code and attached to the response.  It is passed in when
+    # initializing a Chimps::Response by a Chimps::Request.
+    attr_reader :error
+    
+    # Return a response built from a String with the
+    # RestClient::Response module mixed-in.
+    #
+    # If <tt>:error</tt> is passed then this response is is considered
+    # an error with the given message.
+    #
+    # @param [String, #to_i, #headers] body
+    # @param [Hash] options
+    # @option options [String] error the error message
+    # @return [Chimps::Response]
+    def initialize body, options={}
+      super()
+      @body  = body
+      @error = options[:error]
       parse!
     end
 
-    def parse!
-      unless body.blank? || body == 'null'
-        begin
-          data = content_type == :yaml ? YAML.parse(body) : JSON.parse(body)
-          # hack...sometimes we get back an array instead of a
-          # hash...should change the API at Chimps end
-          case data            
-          when Hash   then merge!(data)
-          when Array  then self[:list]   = data # see corresponding pretty printers
-          when String then self[:string] = data
-          else
-          end
-        rescue YAML::ParseError, JSON::ParserError => e
-          puts body.inspect if Chimps.verbose?
-          $stdout.puts("WARNING: Unable to parse response from server")
-        end
-      end
+    # The HTTP status code of the response.
+    #
+    # @return [Integer]
+    def code
+      @code ||= body.to_i
     end
 
-    def success?
-      ! @rest_client_error
+    # The HTTP headers of the response.
+    #
+    # @return [Hash]
+    def headers
+      @headers ||= body.headers
     end
 
-    def error?
-      ! success?
-    end
-
+    # The <tt>Content-type</tt> of the response.
+    #
+    # Will return <tt>:yaml</tt> or <tt>:json</tt> if possible, else
+    # just the raw <tt>Content-type</tt>.
+    #
+    # @return [Symbol, String]
     def content_type
-      begin
-        @rest_client_response.headers[:content_type]
-      rescue NoMethodError
-        raw_content_type = @rest_client_response.content_type
-        return :json if raw_content_type =~ /application\/json/
-        return :yaml if raw_content_type =~ /yaml/
-      end
+      @content_type ||= case headers[:content_type]
+                        when /json/ then :json
+                        when /yaml/ then :yaml
+                        else headers[:content_type]
+                        end
     end
     
-    def print
-      first_line = "#{code.to_s} -- "
-      first_line += (success? ? "SUCCESS" : error_message)
-      puts first_line if Chimps.verbose? || error?
-      puts pretty_print(self).join("\n")
+    # Parse the response from Infochimps.
+    def parse!
+      data = parse_response_body
+      case data
+        # hack...sometimes we get back an array instead of a
+        # hash...should change the API at Chimps end
+      when Hash   then merge!(data)
+      when Array  then self[:array]  = data # see Chimps::Printer#accumulate
+      when String then self[:string] = data
+      end
+    end
+
+    # Was this response a success?
+    #
+    # @return [true, false]
+    def success?
+      ! error?
+    end
+
+    # Was this response an error??
+    #
+    # @return [true, false]
+    def error?
+      !! @error
+    end
+
+    # Print this response.
+    #
+    # Will also print a diagnostic line if Chimps is verbose or this
+    # response was an error.
+    #
+    # @param [Hash] options
+    # @option options [true, nil] skip_column_names (nil) Don't print column names in output.
+    def print options={}
+      puts diagnostic_line if Chimps.verbose? || error?
+      Printer.new(self, options).print
     end
 
     protected
-    # RestClient raises exceptions when things go wrong.  This isn't as useful 
-    def deal_with_rest_client_bullshit rest_client_obj
-      if rest_client_obj.is_a?(RestClient::Exception)
-        @rest_client_response = rest_client_obj.response
-        @rest_client_error    = rest_client_obj
-      else
-        @rest_client_response = rest_client_obj
-        @rest_client_error    = nil
-      end
 
-      begin
-        @body          = @rest_client_response.body
-      rescue NoMethodError
-        @body          = @rest_client_response.to_s
-      end
-      @code          = @rest_client_response.code
-      @error_message = @rest_client_error.message unless success?
+    # Construct and return a line of diagnostic information on this
+    # response.
+    #
+    # @return [String]
+    def diagnostic_line
+      line = "#{code.to_s} -- "
+      line += (success? ? "SUCCESS" : error)
+      line
     end
 
+    # Raise a Chimps::ParseError, optionally including the response
+    # body in the error message if Chimps is verbose.
+    def parse_error!
+      message = Chimps.verbose? ? "#{diagnostic_line}\n\n#{body}" : diagnostic_line
+      raise ParseError.new(message)
+    end
+
+    # Parse the body of this response using the YAML or JSON libraries
+    # into a Ruby data structure.
+    #
+    # @return [Hash, Array, String]
+    def parse_response_body
+      return {} if body.blank? || body == 'null'
+      if content_type == :yaml
+        require 'yaml'
+        begin
+          YAML.parse(body)
+        rescue YAML::ParseError => e
+          parse_error!
+        end
+      else
+        require 'json'
+        begin
+          JSON.parse(body)
+        rescue JSON::ParserError => e
+          parse_error!
+        end
+      end
+    end
+    
   end
 end
-  
-    
-    
+

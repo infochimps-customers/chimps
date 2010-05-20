@@ -1,3 +1,4 @@
 #!/usr/bin/env ruby
-require "chimps/cli"
+require "chimps"
+require 'chimps/cli'
 Chimps::CLI.execute!(ARGV.dup) if $0 == __FILE__

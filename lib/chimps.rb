@@ -7,9 +7,12 @@ require 'rubygems'
 # metadata to and from Infochimps.
 module Chimps
 
+  autoload :Config,    'chimps/config'
   autoload :CONFIG,    'chimps/config'
   autoload :CLI,       'chimps/cli'
+  autoload :Command,   'chimps/commands/base'
   autoload :Commands,  'chimps/commands'
   autoload :Request,   'chimps/request'
+  autoload :Printer,   'chimps/printer'
   
 end

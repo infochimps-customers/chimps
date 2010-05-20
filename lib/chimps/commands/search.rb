@@ -33,6 +33,10 @@ EOF
         on_tail("-n", "--num-results NUM", "Return the given number of results instead of the default #{DEFAULT_LIMIT}") do |n|
           @limit = n.to_i
         end
+
+        on_tail("-s", "--[no-]skip-column-names", "don't print column names in output.") do |s|
+          @skip_column_names = s
+        end
         
       end
 
@@ -50,7 +54,7 @@ EOF
       end
 
       def execute!
-        Chimps::Request.new(PATH, :params => params).get.print
+        Chimps::Request.new(PATH, :params => params).get.print(:skip_column_names => @skip_column_names)
       end
     end
   end

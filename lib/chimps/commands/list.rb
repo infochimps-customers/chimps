@@ -21,6 +21,11 @@ EOF
         on_tail("-a", "--all", "List all resources, not just those owned by you.") do |a|
           @all = a
         end
+
+        on_tail("-s", "--[no-]skip-column-names", "Don't print column names in output.") do |s|
+          @skip_column_names = s
+        end
+        
       end
 
       def all?
@@ -32,7 +37,7 @@ EOF
       end
 
       def execute!
-        Request.new(models_path, :params => params).get.print
+        Request.new(models_path, :params => params).get.print(:skip_column_names => @skip_column_names)
       end
 
     end

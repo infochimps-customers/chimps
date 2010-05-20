@@ -1,5 +1,3 @@
-require 'optparse'
-require 'chimps'
 require 'chimps/utils'
 
 module Chimps
@@ -14,7 +12,7 @@ module Chimps
     def self.execute! argv
       begin
         Runner.new(argv).execute!    
-      rescue ChimpsError => e
+      rescue Chimps::Error => e
         puts e.message
         exit 1
       rescue => e

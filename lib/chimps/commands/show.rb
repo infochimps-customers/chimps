@@ -18,8 +18,16 @@ EOF
       MODELS = %w[dataset collection source license tag category]
       include Chimps::Commands::UsesModel
 
+      # The path of the URL to send a Request to.
+      #
+      # This is different from Chimps::Commands::UsesModel in that it
+      # submits to the YAML path.
+      def model_path
+        "#{plural_model}/#{model_identifier}.yaml"
+      end
+
       def execute!
-        Chimps::Request.new(model_path).get.print
+        puts Chimps::Request.new(model_path).get.body
       end
 
     end
