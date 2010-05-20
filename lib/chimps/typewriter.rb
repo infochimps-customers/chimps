@@ -1,7 +1,5 @@
 module Chimps
 
-  # A class for pretty printing data in responses from Infochimps.
-  #
   # Responses from Infochimps (once parsed from the original JSON or
   # YAML) consist of nested hashes:
   #
@@ -21,11 +19,8 @@ module Chimps
   #     ...
   #   }
   #
-  # This class defines a method for each key which consumes the
-  # corresponding hash and accumulates lines to print for it.
-  #
-  # These accumulated lines are then labeled, joined, aligned, &c. and
-  # printed.
+  # This class utilizes a typewriter and a team of trained chimpanizes
+  # to create pretty, line-oriented output from these hashes.
   class Typewriter < Array
 
     # The response that this Typewriter will print.
@@ -265,7 +260,7 @@ module Chimps
     #
     # The value is +batch+.
     def accumulate_batch batch
-      self << ["Status", "Resource", "ID"] unless skip_column_names?
+      self << ["Status", "Resource", "ID", "Errors"] unless skip_column_names?
       batch.each do |response|
         status = response['status']
         errors = response['errors']
@@ -275,7 +270,7 @@ module Chimps
           id            = resource['id']
           self << [status, resource_type, id]
         else
-          self << ([status] + errors)
+          self << ([status, nil, nil] + errors)
         end
       end
     end
