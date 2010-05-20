@@ -1,5 +1,3 @@
-require 'chimps/utils'
-
 module Chimps
 
   # A namespace to hold the various commands Chimps defines.

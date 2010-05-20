@@ -1,7 +1,5 @@
 module Chimps
-
-  module Commands
-
+  module Utils
     module UsesModel
 
       def model
@@ -31,7 +29,8 @@ module Chimps
       
       def model= model
         raise CLIError.new("Invalid model: #{model}.  Must be one of #{models_string}") unless self.class::MODELS.include?(model)
-        @model = model
+        # FIXME hack!
+        @model = model == 'field' ? 'schema_field' : model
       end
 
       def models_string

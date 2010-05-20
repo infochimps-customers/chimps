@@ -1,5 +1,5 @@
 module Chimps
-  module Commands
+  module Utils
     module UsesKeyValueData
 
       attr_reader :data_file
@@ -36,6 +36,10 @@ module Chimps
         on_tail("-d", "--data-file PATH", "Path to a file containing key=value data") do |p|
           @data_file = File.expand_path(p)
         end
+      end
+
+      def ensure_data_is_present!
+        raise CLIError.new("Must provide some data to send, either on the command line, from an input file, or by piping to STDIN.  Try `chimps help #{name}'") unless data.present?
       end
       
     end

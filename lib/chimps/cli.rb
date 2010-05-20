@@ -1,5 +1,3 @@
-require 'chimps/utils'
-
 module Chimps
 
   # Defines methods for choosing which Chimps::Command class should be

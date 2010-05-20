@@ -16,5 +16,6 @@ module Chimps
   autoload :Request,    'chimps/request'
   autoload :Response,   'chimps/response'
   autoload :Typewriter, 'chimps/typewriter'
+  autoload :Workflows,  'chimps/workflows'
   
 end

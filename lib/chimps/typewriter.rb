@@ -26,9 +26,9 @@ module Chimps
   #
   # These accumulated lines are then labeled, joined, aligned, &c. and
   # printed.
-  class Printer < Array
+  class Typewriter < Array
 
-    # The response that this Printer will print.
+    # The response that this Typewriter will print.
     attr_accessor :response
     
     # Widths of columns as determined by the maximum number of
@@ -42,10 +42,10 @@ module Chimps
     # String to insert between fields in output.
     FIELD_SEPARATOR = "    "
 
-    # Return a Printer to print +data+.
+    # Return a Typewriter to print +data+.
     #
     # @param [Chimps::Response] response
-    # @return [Chimps::Printer]
+    # @return [Chimps::Typewriter]
     def initialize response, options={}
       super()
       @response          = response
@@ -61,7 +61,7 @@ module Chimps
       @skip_column_names
     end
 
-    # Print the accumulated lines in this Printer.
+    # Print the accumulated lines in this Typewriter.
     #
     # Will first calculate appropriate column widths for any
     # Array-like lines.
@@ -82,7 +82,7 @@ module Chimps
     # line to print.
     #
     # If +obj+ is an Array then each element will be passed to
-    # Chimps::Printer#accumulate.
+    # Chimps::Typewriter#accumulate.
     #
     # If +obj+ is a Hash then each key will be mapped to a method
     # <tt>accumulate_KEY</tt> and the corresponding value passed in.
@@ -140,7 +140,7 @@ module Chimps
     # Return a string with +values+ joined by FIELD_SEPARATOR each
     # padded to the corresponding maximum column size.
     #
-    # Must have called Chimps::Printer#calculate_column_widths!
+    # Must have called Chimps::Typewriter#calculate_column_widths!
     # first.
     #
     # @param [Array] values
@@ -159,7 +159,7 @@ module Chimps
     # +resource_data+.
     #
     # Fields to accumulate in each line are set in
-    # Chimps::Printer::RESOURCE_FIELDS.
+    # Chimps::Typewriter::RESOURCE_FIELDS.
     #
     # The structure of the response for a resource looks like:
     #
@@ -241,15 +241,15 @@ module Chimps
     #   {
     #     'batch' => [
     #                  {
-    #                    'status'  => 'created',
-    #                    'resource => {
+    #                    'status'   => 'created',
+    #                    'resource' => {
     #                                   'dataset' => {
     #                                                  'id'    => 39293,
     #                                                  'title' => "My Awesome Dataset",
     #                                                  ...
     #                                                },
     #                                 },
-    #                    'errors' => ~,
+    #                    'errors' => nil,
     #                    'local_paths' => [...] # this is totally optional
     #                  },
     #                  {
@@ -297,6 +297,7 @@ module Chimps
     #
     # The value keyed to +search+ is +search+.
     def accumulate_search search
+      return if search['results'].blank?
       self << self.class::RESOURCE_FIELDS unless skip_column_names?
       search['results'].each { |resource| accumulate(resource) }
     end

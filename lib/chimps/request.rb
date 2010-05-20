@@ -1,7 +1,6 @@
 require 'restclient'
 
 require 'chimps/response'
-require 'chimps/utils'
 
 module Chimps
 
@@ -206,6 +205,7 @@ module Chimps
     #
     # @return [String]
     def data_text
+      require 'json'
       @data_text ||= data.to_json
     end
 

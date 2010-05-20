@@ -1,7 +1,3 @@
-require 'chimps/commands/base'
-require 'chimps/commands/uses_model'
-require 'chimps/request'
-
 module Chimps
   module Commands
 
@@ -16,7 +12,7 @@ EOF
 
       # Models this command applies to (default first)
       MODELS = %w[dataset collection source license tag category]
-      include Chimps::Commands::UsesModel
+      include Chimps::Utils::UsesModel
 
       # The path of the URL to send a Request to.
       #

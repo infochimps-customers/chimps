@@ -1,7 +1,3 @@
-require 'chimps/commands/base'
-require 'chimps/utils/uses_curl'
-require 'chimps/workflows/uploader'
-
 module Chimps
   module Commands
 
@@ -19,8 +15,6 @@ sensible name in the current directory but can also be customized.
 EOF
 
       attr_reader :user_defined_archive_path
-
-      include Chimps::UsesCurl
 
       def define_upload_options
         on_tail("-a", "--archive-path", "Path to the archive to be created.  Defaults to a timestamped ZIP file named after the dataset in the current directory.") do |path|

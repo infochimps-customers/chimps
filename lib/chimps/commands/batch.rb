@@ -1,10 +1,7 @@
-require 'chimps/commands/base'
-require 'chimps/utils/uses_curl'
-require 'chimps/workflows/batch'
-require 'yaml'
-
 module Chimps
   module Commands
+
+    # A command for performing batch updates.
     class Batch < Chimps::Command
 
       BANNER = "usage: chimps batch [OPTIONS] [INPUT_PATH] ..."
@@ -28,9 +25,10 @@ The format of the YAML input files is given at
 
   http://infochimps.org/api
 EOF
+
       attr_accessor :output_file, :upload_even_if_errors
 
-      include Chimps::UsesCurl
+      include Chimps::Utils::UsesCurl
 
       def define_options
         on_tail("-o", "--output PATH", "Store the response from the server at PATH") do |o|

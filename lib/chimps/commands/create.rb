@@ -1,16 +1,14 @@
-require 'chimps/commands/base'
-require 'chimps/request'
-require 'chimps/commands/uses_model'
-require 'chimps/commands/uses_key_value_data'
-
 module Chimps
   module Commands
+
+    # A command to issue a POST requst to create a resource at
+    # Infochimps.
     class Create < Chimps::Command
 
       BANNER = "usage: chimps create [OPTIONS] [PROP=VALUE] ..."
       HELP   = <<EOF
 
-Create a single resource (defaults to dataset) using the properties
+Create a single resource (defaults to a dataset) using the properties
 and values supplied.
 
 Properties and values can be supplied directly on the command line,
@@ -20,15 +18,13 @@ EOF
 
       # Models this command applies to (default first)
       MODELS = %w[dataset source license]
-      include Chimps::Commands::UsesModel
-      include Chimps::Commands::UsesKeyValueData
+      include Chimps::Utils::UsesModel
+      include Chimps::Utils::UsesKeyValueData
 
-      def path
-        model + 's.json'
-      end
-
+      # Issue the POST request.
       def execute!
-        Request.new(path, :data => {model.to_sym => data } , :authenticate => true).post.print
+        ensure_data_is_present!
+        Request.new(models_path, :data => {model.to_sym => data } , :authenticate => true).post.print
       end
       
     end

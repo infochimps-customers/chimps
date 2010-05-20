@@ -1,5 +1,3 @@
-require 'chimps/commands/base'
-
 module Chimps
   module Commands
     class Help < Chimps::Command

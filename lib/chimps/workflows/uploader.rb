@@ -1,12 +1,8 @@
-require 'chimps/utils'
-require 'chimps/utils/uses_curl'
-require 'chimps/request'
-
 module Chimps
   module Workflows
     class Uploader
 
-      include Chimps::UsesCurl
+      include Chimps::Utils::UsesCurl
 
       attr_reader :dataset, :archive_path, :local_paths, :token, :archive
 

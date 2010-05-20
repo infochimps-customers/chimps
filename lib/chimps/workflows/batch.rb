@@ -1,12 +1,8 @@
-require 'chimps/request'
-require 'chimps/utils/uses_curl'
-require 'chimps/workflows/uploader'
-
 module Chimps
   module Workflows
     class BatchUpdater
 
-      include Chimps::UsesCurl
+      include Chimps::Utils::UsesCurl
 
       PATH = "batch.json"
 

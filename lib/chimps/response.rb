@@ -65,7 +65,7 @@ module Chimps
         # hack...sometimes we get back an array instead of a
         # hash...should change the API at Chimps end
       when Hash   then merge!(data)
-      when Array  then self[:array]  = data # see Chimps::Printer#accumulate
+      when Array  then self[:array]  = data # see Chimps::Typewriter#accumulate
       when String then self[:string] = data
       end
     end
@@ -93,7 +93,7 @@ module Chimps
     # @option options [true, nil] skip_column_names (nil) Don't print column names in output.
     def print options={}
       puts diagnostic_line if Chimps.verbose? || error?
-      Printer.new(self, options).print
+      Typewriter.new(self, options).print
     end
 
     protected
@@ -125,7 +125,10 @@ module Chimps
         require 'yaml'
         begin
           YAML.parse(body)
-        rescue YAML::ParseError => e
+        rescue YAML::ParseError => e 
+          parse_error!
+        rescue ArgumentError => e # WHY does YAML return an ArgumentError on malformed input...?
+          @error = "Response was received but was malformed"
           parse_error!
         end
       else

@@ -1,9 +1,8 @@
-require 'chimps/commands/base'
-require 'chimps/request'
-require 'chimps/commands/uses_model'
-
 module Chimps
   module Commands
+
+    # A command to issue a DELETE request against a resource at
+    # Infochimps.
     class Destroy < Chimps::Command
 
       BANNER = "usage: chimps destroy [OPTIONS] ID_OR_HANDLE"
@@ -16,8 +15,9 @@ EOF
 
       # Models this command applies to (default first)
       MODELS = %w[dataset package source license]
-      include Chimps::Commands::UsesModel
+      include Chimps::Utils::UsesModel
 
+      # Issue the DELETE request.
       def execute!
         Request.new(model_path, :authenticate => true).delete.print
       end

@@ -1,8 +1,8 @@
-require 'chimps/commands/base'
-require 'chimps/commands/uses_model'
-
 module Chimps
   module Commands
+
+    # A command to issue a GET request against an index of resources
+    # at Infochimps.
     class List < Chimps::Command
 
       BANNER = "chimps list [OPTIONS]"
@@ -14,8 +14,9 @@ Lists your resources by default but see options below.
 
 EOF
 
-      MODELS = %w[dataset license]
-      include Chimps::Commands::UsesModel
+      # Models that can be indexed (default first)
+      MODELS = %w[dataset license source]
+      include Chimps::Utils::UsesModel
 
       def define_options
         on_tail("-a", "--all", "List all resources, not just those owned by you.") do |a|
@@ -28,14 +29,21 @@ EOF
         
       end
 
+      # List all resources or just those owned by the Chimps user?
       def all?
         @all
       end
 
+      # Parameters to include in the query.
+      #
+      # If listing all resources, then return +nil+.
+      #
+      # @return [Hash, nil]
       def params
         return { :id => Chimps.username } unless all?
       end
 
+      # Issue the GET request.
       def execute!
         Request.new(models_path, :params => params).get.print(:skip_column_names => @skip_column_names)
       end
