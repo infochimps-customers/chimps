@@ -21,6 +21,11 @@ EOF
       # The path to the archive
       attr_reader :archive
 
+      # The data format to annotate the upload with.
+      #
+      # Chimps will try to guess if this isn't given.
+      attr_reader :fmt
+
       # The ID or handle of the dataset to upload data for.
       #
       # @return [String]
@@ -41,11 +46,16 @@ EOF
         on_tail("-a", "--archive-path", "Path to the archive to be created.  Defaults to a timestamped ZIP file named after the dataset in the current directory.") do |path|
           @archive = path
         end
+
+        on_tail("-f", "--format FORMAT", "Data format to annotate upload with.  Tries to guess if not given.") do |f|
+          @fmt = f
+        end
+          
       end
 
       # Upload the data.
       def execute!
-        Chimps::Workflows::Uploader.new(:dataset => dataset, :archive => archive, :local_paths => local_paths).execute!
+        Chimps::Workflows::Uploader.new(:dataset => dataset, :archive => archive, :local_paths => local_paths, :fmt => fmt).execute!
       end
     end
   end

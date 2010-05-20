@@ -30,6 +30,11 @@ EOF
       # debugging.
       attr_accessor :output_path
 
+      # The data format to annotate the upload with.
+      #
+      # Chimps will try to guess if this isn't given.
+      attr_reader :fmt
+
       # Whether to continue to upload even if some of the resources
       # had errors on update/create.
       attr_accessor :upload_even_if_errors
@@ -41,15 +46,20 @@ EOF
           @output_path = File.expand_path(o)
         end
 
-        on_tail("-f", "--force", "Attempt to upload data even when there were errors in the batch update request") do |f|
-          @upload_even_if_errors = f
+        on_tail("-e", "--force", "Attempt to upload data even when there were errors in the batch update request") do |e|
+          @upload_even_if_errors = e
         end
+
+        on_tail("-f", "--format FORMAT", "Data format to annotate EACH upload with.  Tries to guess if not given.") do |f|
+          @fmt = f
+        end
+        
       end
 
       # Perform the batch update and upload.
       def execute!
         ensure_data_is_present!
-        Chimps::Workflows::BatchUpdater.new(data, :output_path => output_path, :upload_even_if_errors => upload_even_if_errors).execute!
+        Chimps::Workflows::BatchUpdater.new(data, :output_path => output_path, :upload_even_if_errors => upload_even_if_errors, :fmt => fmt).execute!
       end
       
     end

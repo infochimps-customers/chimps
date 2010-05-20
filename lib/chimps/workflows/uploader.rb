@@ -14,6 +14,9 @@ module Chimps
       # An array of paths to local files and directories to package
       # into an archive.
       attr_reader :local_paths
+
+      # The format to annotate the upload with.
+      attr_reader :fmt
       
       # The archive to upload.
       attr_reader :archive
@@ -34,16 +37,22 @@ module Chimps
 
       # Create a new Uploader from the given parameters.
       #
+      # If <tt>:fmt</tt> is provided it will be used as the data
+      # format to annotate the upload with.  If not, Chimps will try
+      # to guess.
+      #
       # @param [Hash] options
       # @option options [String, Integer] dataset the ID or handle of the dataset to which data should be uploaded
       # @option options [Array<String>] local_paths the local paths to bundle into an archive      
       # @option options [String, IMW::Resource] archive the path to the archive to create (defaults to IMW::Workflows::Downloader#default_archive_path)
+      # @option options [String] fmt the data format to annotate the upload with
       def initialize options={}
         require 'imw'
         IMW.verbose      = Chimps.verbose?
         @dataset         = options[:dataset] or raise PackagingError.new("Must provide the ID or handle of a dataset to upload data to.")
         self.local_paths = options[:local_paths]   # must come before self.archive=
         self.archive     = options[:archive]
+        self.fmt         = options[:fmt]
       end
 
       # Set the local paths to upload for this dataset.
@@ -94,6 +103,15 @@ module Chimps
         raise PackagingError.new("Invalid path #{potential_package}, not an archive or compressed file")        unless potential_package.is_compressed? ||  potential_package.is_archive?
         raise PackagingError.new("Multiple local paths must be packaged in an archive, not a compressed file.") if     local_paths.size > 1             && !potential_package.is_archive?
         @archive = potential_package
+      end
+
+      # Set the data format to annotate the upload with.
+      #
+      # If not provided, Chimps will use the Infinite Monkeywrench
+      # (IMW) to try and guess the data format.  See
+      # IMW::Tools::Summarizer for more information.
+      def fmt= new_fmt=nil
+        @fmt ||= new_fmt || IMW::Tools::Summarizer.new(local_paths).most_common_data_format
       end
 
       # The default path to the archive that will be built.
@@ -147,7 +165,7 @@ module Chimps
       #
       # @return [Hash]
       def package_params
-        { :package => { :fmt => 'csv', :pkg_fmt => archive.extension } }
+        { :package => { :fmt => fmt, :pkg_fmt => archive.extension } }
       end
 
       # Authorize the Chimps user for this upload.

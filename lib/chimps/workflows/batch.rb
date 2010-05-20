@@ -27,6 +27,11 @@ module Chimps
       # Whether to upload even if there were errors on update.
       attr_reader :upload_even_if_errors
 
+      # The data format to annotate the upload with.
+      #
+      # Chimps will try to guess if this isn't given.
+      attr_reader :fmt
+
       # Create a new BatchUpdater with the given +data+ and +options+.
       #
       # The intermediate batch response can be saved at a file named
@@ -36,11 +41,13 @@ module Chimps
       # @param [Hash] options
       # @option options [String] output_path path to store the batch response
       # @option options [true, false] upload_even_if_errors whether to continue uploading in the presence of errors on update
+      # @option options [String] fmt the data format to annotate each upload with (see `chimps upload')
       # @return [Chimps::Workflows::BatchUpdater]
       def initialize data, options={}
         @data                  = data
         @output_path           = options[:output_path]
         @upload_even_if_errors = options[:upload_even_if_errors]
+        @fmt                   = options[:fmt]
       end
 
       # The path to submit batch update requests.
@@ -91,7 +98,7 @@ module Chimps
         return unless success? || upload_even_if_errors
         $stderr.puts("WARNING: continuing with uploads even though there were errors") unless success?
         dataset_ids_and_local_paths.each do |id, local_paths|
-          Chimps::Workflows::Uploader.new(:dataset => id, :local_paths => local_paths).execute!
+          Chimps::Workflows::Uploader.new(:dataset => id, :local_paths => local_paths, :fmt => fmt).execute!
         end
       end
 
