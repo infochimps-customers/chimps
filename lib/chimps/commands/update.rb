@@ -19,7 +19,7 @@ EOF
       # Models this command applies to (default first)
       MODELS = %w[dataset source license]
       include Chimps::Utils::UsesModel
-      include Chimps::Utils::UsesKeyValueData
+      include Chimps::Utils::UsesYamlData
 
       # Issue the PUT request.
       def execute!
