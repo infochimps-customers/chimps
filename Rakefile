@@ -7,9 +7,9 @@ begin
     gem.name = "chimps"
     gem.summary = %Q{Search, browse, download and create datasets on the infochimps.org data repository, and query the api.}
     gem.description = %Q{Find data on any subject! A command-line interface to the Infochimps data repository}
-    gem.email = "flip@infochimps.org"
+    gem.email = "coders@infochimps.org"
     gem.homepage = "http://github.com/infochimps/chimps"
-    gem.authors = ["Philip (flip) Kromer"]
+    gem.authors = ["Dhruv Bansal"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings

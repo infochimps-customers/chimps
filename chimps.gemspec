@@ -5,14 +5,14 @@
 
 Gem::Specification.new do |s|
   s.name = %q{chimps}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Philip (flip) Kromer"]
+  s.authors = ["Dhruv Bansal"]
   s.date = %q{2010-05-20}
   s.default_executable = %q{chimps}
   s.description = %q{Find data on any subject! A command-line interface to the Infochimps data repository}
-  s.email = %q{flip@infochimps.org}
+  s.email = %q{coders@infochimps.org}
   s.executables = ["chimps"]
   s.extra_rdoc_files = [
     "LICENSE",
@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "bin/chimps",
+     "chimps.gemspec",
      "examples/batch.yaml",
      "lib/chimps.rb",
      "lib/chimps/cli.rb",
