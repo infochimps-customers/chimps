@@ -4,14 +4,20 @@
 .bzr
 
 # editors
-\#*
-.#*
-\.#*
 *~
+\#*
+\.#*
 *.tmproj
+tmtags
+TAGS
+*.swp
+
+## PROJECT::GENERAL
+coverage
+rdoc
+pkg
 
 # miscellaneous
 .DS_Store
 .bak
-TAGS
 *DO_NOT_VERSION*
