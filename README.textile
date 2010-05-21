@@ -1,4 +1,6 @@
-= Searching
+h2. Awesome Chimp Tricks
+
+h3. Searching
 
 Search datasets
 
@@ -16,17 +18,17 @@ or categories
 
   chimps search -c education statistical abstract
 
-= Browsing
+h3. Browsing
 
   chimps describe dataset 3923
   chimps describe source us-doj
   chimps describe field length
 
-= Downloading
+h3. Downloading
 
   chimps download 39283
 
-= Creating
+h3. Creating
 
   chimps create data.yaml
 
@@ -39,10 +41,25 @@ and of course
 
   chimps upload 39283 path/to/my/data
 
-= General Options
+h3. General Options
 
 Work as someone other than the usual user
 
   chimps -i path/to/my/identify_file.yml create data.yaml
 
 
+h2. Settings and Credentials
+
+Create a file in @~/.chimps@
+
+<pre><code>
+    # -*-yaml-*-
+    :site:
+      :username: monkeyboy
+      :key:      xxxxxxxxxxxxxxxx
+      :secret:   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    :query:
+      :username: monkeyboy
+      :key:      xxxxxxxxxxxxxxxxx
+      :secret:   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+</code></pre>
