@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
      ".gitignore",
+     "CHANGELOG.textile",
      "LICENSE",
      "README.textile",
      "Rakefile",
