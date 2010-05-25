@@ -1,0 +1,292 @@
+Infochimps[http://infochimps.org] offers two APIs for users to access
+and modify data:
+
+- an XML & JSON based {RESTful API}[http://infochimps.org/api] to list, show, create, update, and destroy datasets and associated resources on Infochimps[http://infochimps.org]
+- a JSON based {Query API}[http://api.infochimps.com] to query particular rows in datasets
+
+Chimps provides a Ruby wrapper for both of these APIs (built on
+RestClient) as well as a command-line tool.
+
+See the above links for details on the sorts of parameters the
+Infochimps APIs expect and the output they provide.
+
+= Installation
+
+Chimps is hosted as a gem on Gemcutter[http://gemcutter.org].  You can see our current gem sources with
+
+ gem sources
+
+If you don't see <tt>http://gemcutter.org</tt> you'll have to add it
+with
+
+  gem sources -a http://gemcutter.org
+
+Then you can install Chimps with
+
+  gem install chimps
+
+== API keys 
+
+You'll need an API key and secret from Infochimps before you can start
+adding or modifying datasets via the REST API.  {Sign up for an
+Infochimps account}[http://infochimps.org/signup] and register for an
+API key.
+
+You'll need a separate API key to use the Query API, {register for one
+now}[http://api.infochimps.com/features-and-pricing].
+
+Once you've registered for the API(s) you'll need to put them in your
+<tt>~/.chimps</tt> file which should look like
+
+    # -*-yaml-*-
+    :site:
+      :username: monkeyboy
+      :key:      xxxxxxxxxxxxxxxx
+      :secret:   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    :query:
+      :username: monkeyboy
+      :key:      xxxxxxxxxxxxxxxxx
+      :secret:   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+= Usage
+
+Chimps can be used as a library in your own code or as a command-line
+tool.
+
+== Chimps on the Command Line
+
+You can use Chimps directly on the command line to interact with
+Infochimps.
+
+Try running
+
+  chimps help
+
+to get started as well as
+
+  chimps help COMMAND
+
+for help on a specific command.  When running in verbose mode (with
+<tt>-v</tt>), Chimps will print helpful diagnostics on each query it's
+performing.
+
+=== Testing
+
+You can test whether or not you have access to the Infochimps REST API
+with
+
+  chimps test
+
+Chimps will try and print informative error messages if it finds it
+can't authenticate you.
+
+=== Searching
+
+Search datasets
+
+  chimps search 'statisical abstract'
+
+or other kinds of models
+
+  chimps search -m source 'Department of Justice'
+
+This _does_ _not_ require credentials for the RESTful API.
+
+=== Listing
+
+You can list your datasets
+
+  chimps list
+
+or all datasets
+
+  chimps list -a
+
+=== Showing
+
+You can get more information about a particular dataset (as a YAML
+document)
+
+  chimps show my-awesome-dataset
+
+This _does_ _not_ require credentials for the RESTful API.  
+
+=== Creating
+
+You can create a dataset, passing properties directly on the command
+line
+
+  chimps create title="My Awesome Dataset" description="Curt, but informative."
+  16011    my-awesome-dataset    2010-05-25T22:52:16Z    My Awesome Dataset
+
+or from a YAML input file
+
+  chimps create my_awesome_dataset.yaml
+  16011    my-awesome-dataset    2010-05-25T22:52:16Z    My Awesome Dataset
+
+Examples of input files are in the <tt>examples</tt> directory of the
+Chimps distribution.
+
+=== Updating
+
+You can also update an existing dataset
+
+  chimps update my-awesome-dataset title="My TOTALLY Awesome Dataset"
+
+Passing in data works just like the <tt>create</tt> command.
+
+=== Destroying
+
+You can destroy datasets as well
+
+  chimps destroy my-awesome-dataset
+
+=== Downloading
+
+You can download a dataset from Infochimps
+
+  chimps download my-awesome-dataset
+
+which will put it in the current directory.  
+
+You can also specify a format or package.
+
+  chimps download -f csv -p tar.bz2 my-awesome-dataset
+
+=== Uploading
+
+You can upload data from your local machine to an existing dataset at
+Infochimps
+
+  chimps upload my-awesome-dataset /path/to/my/data/*
+  16005    boozer    2010-05-20T13:58:07Z    boozer
+
+Chimps will package all the files you specify into a single archive
+and upload it.  You can annotate the upload with a particular format
+(though Chimps will try and guess).  Chimps will NOT make an archive
+if you only attempt to upload a single file and it is already an
+archive.
+
+Chimps uses the {Infinite
+Monkeywrench}[http://github.com/infochimps/imw] to process the data
+for uploads.
+
+=== Batch Jobs
+
+Chimps allows you to peform batch requests against the Infochimps REST
+API in which many changes are affected through a single API call.
+
+  chimps batch batch_data.yaml
+  Status     Resource    ID       Errors                                      
+  created    source      13671
+  created    dataset     16013
+  invalid                         Title is too short (minimum is 4 characters)
+  
+The contents in <tt>batch_data.yaml</tt> specify an array of resources
+to update or create.  Each resource's data can be attached to local
+paths to upload.  These paths will be packaged and uploaded (just as
+in the +upload+ command) after the batch update finishes.
+
+Errors in a particular resource will not cause the whole batch job to
+fail (as above).
+
+Learn more about the format of the <tt>batch_data.yaml</tt> file by
+looking at the example in the +examples+ directory of the Chimps
+distribution or by visiting the {Infochimps REST
+API}[http://infochimps.org/api].
+
+=== Querying
+
+You can also use Chimps to make queries against the Infochimps Query
+API.
+
+  chimps query soc/net/tw/influence screen_name=infochimps
+  {"replies_out":13,"account_age":602,"statuses":166,"id":15748351,"replies_in":22,"screen_name":"infochimps"}
+
+where parameters to include for a _single_ query can be passed in on
+the command line.
+
+If you pass in the path to a YAML file then it must consist of an
+array of such parameter hashes and will result in multiple queries
+being made (to the same dataset)
+
+  chimps query soc/net/tw/influene query.yaml
+  {"replies_out":13,"account_age":602,"statuses":166,"id":15748351,"replies_in":22,"screen_name":"infochimps"}
+  {"replies_out":940,"account_age":440,"statuses":5015,"id":19058681,"replies_in":88909,"screen_name":"aplusk"}
+  {"replies_out":0,"account_age":1123,"statuses":634,"id":813286,"replies_in":14541,"screen_name":"BarackObama"}
+
+== Chimps as a Library
+
+You can also use Chimps in your own code to handle making requests of
+Infochimps.
+
+=== Using the REST API
+
+The Chimps::Request class makes requests against the REST API.  Create
+a request by specifying a path on the Infochimps server (it _must_ end
+with <tt>.json</tt>).
+
+  list_dataset_request = Chimps::Request.new('/datasets.json')
+  list_dataset_request.get
+
+Some requests need be signed.  Assuming you've propertly initialized
+the <tt>Chimps::CONFIG</tt> Hash with the proper values (identical to
+the arrangement of the <tt>~/.chimps</tt> configuration file) you can
+simply ask the request to sign itself
+
+  authenticated_list_datasets_request = Chimps::Request.new('/datasets.json', :authenticate => true)
+
+You can also pass in query params
+
+  authenticated_list_datasets_request_with_params = Chimps::Request.new('/datasets.json', :query_params => { :id => 'infochimps' }, :authenticate => true)
+
+For POST and PUT requests you can also include data, which will also
+be signed if you ask.
+
+  authenticated_create_dataset_request = Chimps::Request('/datasets.json', :data => { :title => "My Awesome Dataset", :description => "An amazing description." }, :authenticate => true)
+  authenticated_create_dataset_request.post
+
+The +get+, +post+, +put+, and +delete+ methods of a Chimps::Request
+all return a Chimps::Response which automatically parses the response
+body into Ruby data structures.
+
+=== Using the Query API
+
+The Chimps::QueryRequest class makes requests against the Query API.
+It works just the similarly to the Chimps::Request except that the
+path supplied is the path to the corresponding dataset on the {Query
+API}[http://api.infochimps.com].
+
+All QueryRequests must be authenticated.
+
+  authenticated_query_request = Chimps::QueryRequest.new('soc/net/tw/trstrank.json', :query_params => { :screen_name => 'infochimps' } )
+  authenticated_query_request.get
+
+=== Using Workflows
+
+In addition to making single requests, Chimps also has a few workflows
+which automate sequences of requests needed for certain complex tasks
+(like uploading or downloading of data, both of which require
+authorization tokens).
+
+The three workflows implemented so far include
+
+- Chimps::Workflows::Uploader
+- Chimps::Workflows::Downloader
+- Chimps::Workflows::BatchUpdater
+
+Consult the documentation for each workflow to learn how to use it.  A
+brief example of how to use the Downloader:
+
+  downloader = Chimps::Workflows::Downloader.new(:dataset => 'my-awesome-dataset')
+  downloader.execute! # performs download
+
+= Contributing
+
+Chimps is an open source project created by the Infochimps team to
+encourage adoption of the Infochimps APIs.  The official repository is
+hosted on GitHub
+
+  http://github.com/infochimps/chimps
+
+Feel free to clone it and send pull requests.
