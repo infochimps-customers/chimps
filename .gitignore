@@ -1,4 +1,17 @@
 
+# editors
+*~
+\#*
+\.#*
+*.tmproj
+tmtags
+TAGS
+*.swp
+
+## PROJECT::GENERAL
+coverage
+rdoc
+pkg
 
 # editors
 # miscellaneous

@@ -14,6 +14,8 @@ begin
     gem.add_dependency 'rest-client', ['>= 1.5.1']
     gem.add_dependency 'json',        ['>= 1.4.3']
     gem.add_dependency 'imw',         ['>= 0.2.3']
+    gem.add_development_dependency "rspec", [">= 1.2.9"]
+    gem.add_development_dependency "yard",  [">= 0"]
     gem.files.exclude "old/**/*"
   end
   Jeweler::GemcutterTasks.new
@@ -26,7 +28,27 @@ task :tags do
   system "etags -R README.rdoc bin examples lib spec"
 end
 
-desc "Build docs"
-task :docs do
-  system "yardoc"
+require 'spec/rake/spectask'
+Spec::Rake::SpecTask.new(:spec) do |spec|
+  spec.libs << 'lib' << 'spec'
+  spec.spec_files = FileList['spec/**/*_spec.rb']
+end
+
+Spec::Rake::SpecTask.new(:rcov) do |spec|
+  spec.libs << 'lib' << 'spec'
+  spec.pattern = 'spec/**/*_spec.rb'
+  spec.rcov = true
+end
+
+task :spec => :check_dependencies
+task :default => :spec
+
+begin
+  require 'yard'
+  YARD::Rake::YardocTask.new
+rescue LoadError
+  desc "Build YARD documentation"
+  task :yardoc do
+    abort "YARD is not available. In order to run yardoc, you must: sudo gem install yard"
+  end
 end
