@@ -56,17 +56,20 @@ module Chimps
       @skip_column_names
     end
 
-    # Print the accumulated lines in this Typewriter.
+    # Print the accumulated lines in this Typewriter to the given
+    # +output+ (defaults to <tt>$stdout</tt>).
     #
     # Will first calculate appropriate column widths for any
     # Array-like lines.
-    def print
+    #
+    # @param [#puts] output
+    def print output=nil
       calculate_column_widths!
       each do |line|
         if line.is_a?(Array)
-          puts pad_and_join(line)
+          output.puts pad_and_join(line)
         else
-          puts line
+          output.puts line
         end
       end
     end
@@ -93,7 +96,7 @@ module Chimps
             accumulate_listing(resource_data)
           when %w[dataset source license].include?(resource_name.to_s)
             accumulate_resource(resource_name, resource_data)
-          when %w[errors batch search api_account].include?(resource_name.to_s)
+          when %w[errors batch search api_account message].include?(resource_name.to_s)
             send("accumulate_#{resource_name}", resource_data)
           when :array  == resource_name         # constructed by Chimps::Response
             accumulate_listing(resource_data)
@@ -227,6 +230,22 @@ module Chimps
       errors.each do |error|
         self << error
       end
+    end
+
+    # Accumulate a line for the given +message+.
+    #
+    # The structure of the response from the Infochimps Query API on
+    # an error is:
+    #
+    #   {
+    #     'message' => "The error message returned"
+    #   }
+    #
+    # The value is +message+.
+    #
+    # @param [String] message
+    def accumulate_message message
+      self << message
     end
 
     # Accumulate lines for each of the batch responses in +batch+.

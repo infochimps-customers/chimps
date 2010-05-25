@@ -84,6 +84,20 @@ module Chimps
       !! @error
     end
 
+    # Return a new Hash consisting of the data from this response.
+    #
+    # FIXME This is used when pretty printing -- though it shouldn't
+    # be necessary.
+    #
+    # @return [Hash]
+    def data
+      returning({}) do |d|
+        each_pair do |key, value|
+          d[key] = value
+        end
+      end
+    end
+
     # Print this response.
     #
     # Will also print a diagnostic line if Chimps is verbose or this
@@ -92,8 +106,10 @@ module Chimps
     # @param [Hash] options
     # @option options [true, nil] skip_column_names (nil) Don't print column names in output.
     def print options={}
-      puts diagnostic_line if Chimps.verbose? || error?
-      Typewriter.new(self, options).print
+      out = options[:to]  || options[:out] || $stdout
+      err = options[:out] || $stdout
+      output.puts diagnostic_line if Chimps.verbose? || error?
+      Typewriter.new(self, options).print(output)
     end
 
     protected

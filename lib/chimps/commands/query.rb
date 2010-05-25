@@ -26,7 +26,7 @@ You can learn about the main Infochimps site API at
 EOF
 
       include Chimps::Utils::UsesYamlData
-      IGNORE_YAML_FILES_ON_COMMAND_LINE = true # must come after include
+      IGNORE_FIRST_ARG_ON_COMMAND_LINE = true # must come after include
 
       # The dataset to query.
       #
@@ -42,14 +42,41 @@ EOF
       def path
         dataset + ".json"
       end
+
+      # Should the query output be pretty-printed?
+      #
+      # @return [true, nil]
+      def pretty_print?
+        @pretty_print
+      end
+
+      # Define options for queries.
+      def define_query_options
+        on_tail("-p", "--[no-]pretty-print", "Pretty print the output.") do |p|
+          @pretty_print = p
+        end
+      end
+
+      # The requests that will be sent to the server.
+      #
+      # @return [Array<Chimps::QueryRequest>]
+      def requests
+        if data.is_a?(Hash)
+          [QueryRequest.new(path, :query_params => data, :authenticate => true)]
+        else # it's an Array, see Chimps::Utils::UsesYamlData
+          data.map { |params| QueryRequest.new(path, :query_params => params, :authenticate => true) }
+        end
+      end
       
       # Issue the GET request.
       def execute!
-        response = QueryRequest.new(path, :query_params => data, :authenticate => true).get
-        if response.error?
-          response.print
-        else
-          puts response.inspect
+        requests.each do |request|
+          response = request.get
+          if response.error?
+            response.print :to => $stderr
+          else
+            puts pretty_print? ? JSON.pretty_generate(response.data) : response.body
+          end
         end
       end
       

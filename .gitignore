@@ -1,17 +1,19 @@
-# version control
-.svn
-.hg
-.bzr
+
 
 # editors
-\#*
-.#*
-\.#*
-*~
-*.tmproj
-
 # miscellaneous
+# version control
+*.tmproj
+*DO_NOT_VERSION*
+*~
+.#*
 .DS_Store
 .bak
+.bzr
+.hg
+.svn
+/chimps.gemspec
 TAGS
-*DO_NOT_VERSION*
+\#*
+\.#*
+pkg/*

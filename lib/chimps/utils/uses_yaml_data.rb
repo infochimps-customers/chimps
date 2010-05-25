@@ -3,6 +3,7 @@ module Chimps
     module UsesYamlData
 
       IGNORE_YAML_FILES_ON_COMMAND_LINE = false
+      IGNORE_FIRST_ARG_ON_COMMAND_LINE  = true
 
       attr_reader :data_file
 
@@ -39,7 +40,8 @@ module Chimps
 
       def params_from_command_line
         returning([]) do |d|
-          argv.each do |arg|
+          argv.each_with_index do |arg, index|
+            next if index == 0 && IGNORE_FIRST_ARG_ON_COMMAND_LINE
             next unless arg =~ /^(\w+) *=(.*)$/
             name, value = $1.downcase.to_sym, $2.strip
             d << { name => value } # always a hash
@@ -49,7 +51,8 @@ module Chimps
             
       def yaml_files_from_command_line
         returning([]) do |d|
-          argv.each do |arg|
+          argv.each_with_index do |arg, index|
+            next if index == 0 && IGNORE_FIRST_ARG_ON_COMMAND_LINE            
             next if arg =~ /^(\w+) *=(.*)$/
             path = File.expand_path(arg)
             raise CLIError.new("No such path #{path}") unless File.exist?(path)

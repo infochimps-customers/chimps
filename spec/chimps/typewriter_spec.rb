@@ -97,7 +97,7 @@ describe Chimps::Typewriter do
 
     it "should calculate its column widths before printing" do
       $stdout = File.open('/dev/null', 'w')
-      @typewriter.print
+      @typewriter.print($stdout)
       @typewriter.column_widths.should_not be_empty
     end
 

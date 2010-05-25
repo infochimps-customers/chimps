@@ -1,0 +1,11 @@
+---
+# The query command can be fed an array of hashes to run multiple
+# queries.
+#
+# This example will generate three queries of the Wordbag dataset.
+#
+#   http://api.infochimps.com/describe/soc/net/tw/wordbag
+
+- screen_name: infochimps
+- screen_name: aplusk
+- screen_name: barackobama  
