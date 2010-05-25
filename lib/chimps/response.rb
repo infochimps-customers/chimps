@@ -100,16 +100,16 @@ module Chimps
 
     # Print this response.
     #
-    # Will also print a diagnostic line if Chimps is verbose or this
-    # response was an error.
+    # Options are also passed to Chimps::Typewriter.new; consult for
+    # details.
     #
     # @param [Hash] options
-    # @option options [true, nil] skip_column_names (nil) Don't print column names in output.
+    # @option options
     def print options={}
-      out = options[:to]  || options[:out] || $stdout
-      err = options[:out] || $stdout
-      output.puts diagnostic_line if Chimps.verbose? || error?
-      Typewriter.new(self, options).print(output)
+      out = options[:to] || options[:out] || $stdout
+      err =                 options[:err] || $stderr
+      err.puts(diagnostic_line) if error? || Chimps.verbose?
+      Typewriter.new(self, options).print(out)
     end
 
     protected

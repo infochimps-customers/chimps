@@ -63,7 +63,7 @@ module Chimps
     # Array-like lines.
     #
     # @param [#puts] output
-    def print output=nil
+    def print output=$stdout
       calculate_column_widths!
       each do |line|
         if line.is_a?(Array)
