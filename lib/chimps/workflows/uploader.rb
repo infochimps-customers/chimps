@@ -130,13 +130,13 @@ module Chimps
       #
       # @return [String]
       def readme_url
-        File.join(Chimps::CONFIG[:host], "/README-infochimps")
+        File.join(Chimps::CONFIG[:site][:host], "/README-infochimps")
       end
 
       # The URL to the ICSS file for this dataset on Infochimps
       # servers
       def icss_url
-        File.join(Chimps::CONFIG[:host], "datasets", "#{dataset}.yaml")
+        File.join(Chimps::CONFIG[:site][:host], "datasets", "#{dataset}.yaml")
       end
 
       # Both the local paths and remote paths to package.
@@ -193,7 +193,7 @@ module Chimps
         return if skip_packaging?
         archiver = IMW::Tools::Archiver.new(archive.name, input_paths)
         result   = archiver.package(archive.path)
-        raise PackagingError.new("Unable to package files for upload.  Temporary files left in #{archiver.tmp_dir}") if result.is_a?(RuntimeError) || (!archiver.success?)
+        raise PackagingError.new("Unable to package files for upload.  Temporary files left in #{archiver.tmp_dir}") if result.is_a?(StandardError) || (!archiver.success?)
         archiver.clean!
       end
 

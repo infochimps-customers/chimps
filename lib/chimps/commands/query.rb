@@ -26,7 +26,9 @@ You can learn about the main Infochimps site API at
 EOF
 
       include Chimps::Utils::UsesYamlData
-      IGNORE_FIRST_ARG_ON_COMMAND_LINE = true # must come after include
+      def ignore_first_arg_on_command_line
+        true
+      end
 
       # The dataset to query.
       #

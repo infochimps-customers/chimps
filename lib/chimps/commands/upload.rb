@@ -15,7 +15,7 @@ upload this archive to Infochimps.  The local archive defaults to a
 sensible name in the current directory but can also be customized.
 
 If the only file to be packaged is already a package (.zip, .tar,
-.tar.gz, &.c) then it will not be packaged again.
+.tar.gz, &c.) then it will not be packaged again.
 EOF
 
       # The path to the archive

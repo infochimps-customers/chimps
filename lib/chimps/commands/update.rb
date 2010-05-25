@@ -20,6 +20,9 @@ EOF
       MODELS = %w[dataset source license]
       include Chimps::Utils::UsesModel
       include Chimps::Utils::UsesYamlData
+      def ignore_first_arg_on_command_line
+        true
+      end
 
       # Issue the PUT request.
       def execute!

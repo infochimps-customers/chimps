@@ -74,7 +74,7 @@ module Chimps
     #
     # @return [String]
     def host
-      @host ||= ENV["CHIMPS_HOST"] || Chimps::CONFIG[:site][:host]
+      @host ||= Chimps::CONFIG[:site][:host]
     end
 
     # Return the URL for this request with the (signed, if necessary)
@@ -256,7 +256,7 @@ module Chimps
     #
     # @return [String]
     def host
-      @host ||= ENV["CHIMPS_QUERY_HOST"] || Chimps::CONFIG[:query][:host]
+      @host ||= Chimps::CONFIG[:query][:host]
     end
 
     # Authenticate this request by stuffing the <tt>:requested_at</tt>

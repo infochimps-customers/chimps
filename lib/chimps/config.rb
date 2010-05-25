@@ -1,13 +1,13 @@
 module Chimps
 
   # Default configuration for Chimps.  User-specific configuration
-  # usually lives in a YAML file <tt>~/.chimps</tt>.
+  # lives in a YAML file <tt>~/.chimps</tt>.
   CONFIG = {
     :query => {
-      :host => 'http://api.infochimps.com'
+      :host => ENV["CHIMPS_QUERY_HOST"] || 'http://api.infochimps.com'
     },
     :site => {
-      :host => 'http://infochimps.org'
+      :host => ENV["CHIMPS_HOST"]       || 'http://infochimps.org'
     },
     :identity_file    => File.expand_path(ENV["CHIMPS_RC"] || "~/.chimps"),
     :verbose          => nil,
