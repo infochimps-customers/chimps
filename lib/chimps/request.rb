@@ -103,7 +103,7 @@ module Chimps
     # @return [Chimps::Response]
     def get options={}
       handle_exceptions do
-        puts "GET #{url}" if Chimps.verbose?
+        Chimps.log.info("GET #{url}")
         Response.new(super(DEFAULT_HEADERS.merge(options)))
       end
     end
@@ -117,7 +117,7 @@ module Chimps
     # @return [Chimps::Response]
     def post options={}
       handle_exceptions do
-        puts "POST #{url}" if Chimps.verbose?
+        Chimps.log.info("POST #{url}")
         Response.new(super(data_text, DEFAULT_HEADERS.merge(options)))
       end
     end
@@ -131,7 +131,7 @@ module Chimps
     # @return [Chimps::Response]
     def put options={}
       handle_exceptions do
-        puts "PUT #{url}" if Chimps.verbose?
+        Chimps.log.info("PUT #{url}")
         Response.new(super(data_text, DEFAULT_HEADERS.merge(options)))
       end
     end
@@ -146,7 +146,7 @@ module Chimps
     # @return [Chimps::Response]
     def delete options={}
       handle_exceptions do
-        puts "DELETE #{url}" if Chimps.verbose?
+        Chimps.log.info("DELETE #{url}")
         Response.new(super(DEFAULT_HEADERS.merge(options)))
       end
     end
@@ -175,20 +175,10 @@ module Chimps
       query_params[:api_key]      = Chimps::CONFIG[:site][:key]
     end
 
-    # Return the sorted keys of the query params.
-    #
-    # @return [Array]
-    def alphabetical_params
-      query_params.keys.map(&:to_s).sort
-    end
-
     # Return an unsigned query string for this request.
-    #
-    # Query parameters will be used in alphabetical order.
     #
     # @return [String]
     def unsigned_query_string
-      # alphabetical_params.map { |key| "#{CGI::escape(key.to_s)}=#{CGI::escape(query_params[key.to_sym].to_s)}" }.join("&") # doesn't flatten nested hashes properly
       RestClient::Payload.generate(query_params)
     end
 
@@ -200,8 +190,7 @@ module Chimps
     #
     # @return [String]
     def unsigned_query_string_stripped
-      require 'cgi'      
-      @query_params_text ||= alphabetical_params.map { |key| CGI::escape(key.to_s) + CGI::escape(query_params[key.to_sym].to_s) }.join('')
+      @query_params_text ||= obj_to_stripped_string(query_params)
     end
 
     # Return the data of this request as a string.
@@ -238,6 +227,18 @@ module Chimps
       "#{unsigned_query_string}&signature=#{signature}"
     end
 
+    # Turn +obj+ into a string, sorting on internal keys.
+    #
+    # @param [Hash, Array, String] obj
+    # @return [String]
+    def obj_to_stripped_string obj
+      case obj
+      when Hash   then obj.keys.map(&:to_s).sort.map { |key| [key.to_s.downcase, obj_to_stripped_string(obj[key.to_sym])].join('') }.join('')
+      when Array  then obj.map { |e| obj_to_stripped_string(e) }.join('')
+      else             obj.to_s
+      end
+    end
+    
   end
 
   # A class to encapsulate requests made against the Infochimps paid

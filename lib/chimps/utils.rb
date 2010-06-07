@@ -1,6 +1,7 @@
 require 'chimps/config'
 require 'chimps/utils/extensions'
 require 'chimps/utils/error'
+require 'chimps/utils/log'
 
 module Chimps
   module Utils
@@ -8,4 +9,5 @@ module Chimps
     autoload :UsesModel,    'chimps/utils/uses_model'
     autoload :UsesYamlData, 'chimps/utils/uses_yaml_data'
   end
+
 end

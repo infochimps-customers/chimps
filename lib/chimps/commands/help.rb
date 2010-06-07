@@ -57,9 +57,9 @@ for any of the commands above.
 
 = Setup
 
-Once you have obtained an API key and secret from Infochimps, place them
-in a file Chimps::CONFIG[:identity_file] in your home directory with the
-following format
+Once you have obtained an API key and secret from Infochimps, place
+them in a file Chimps::CONFIG[:identity_file] in your home directory
+with the following format
 
   ---
   # API credentials for use on the main Infochimps site

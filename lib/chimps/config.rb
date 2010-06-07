@@ -1,5 +1,12 @@
 module Chimps
 
+  # Options that can be overriden by the command-line.
+  COMMAND_LINE_OPTIONS = {
+    :identity_file    => File.expand_path(ENV["CHIMPS_RC"] || "~/.chimps"),
+    # log_file -- will be specified on command line
+    # verbose  -- will be specified on command line
+  }
+
   # Default configuration for Chimps.  User-specific configuration
   # lives in a YAML file <tt>~/.chimps</tt>.
   CONFIG = {
@@ -9,14 +16,12 @@ module Chimps
     :site => {
       :host => ENV["CHIMPS_HOST"]       || 'http://infochimps.org'
     },
-    :identity_file    => File.expand_path(ENV["CHIMPS_RC"] || "~/.chimps"),
-    :verbose          => nil,
     :timestamp_format => "%Y-%m-%d_%H-%M-%S"
   }
 
   # Is Chimps in verbose mode?
   #
-  # @return [true, false]
+  # @return [true, false, nil]
   def self.verbose?
     CONFIG[:verbose]
   end
@@ -42,9 +47,9 @@ module Chimps
     # file.
     def self.load
       # FIXME this is a terrible hack...and it only goes to 2 deep!
-      if File.exist?(CONFIG[:identity_file])
+      if File.exist?(COMMAND_LINE_OPTIONS[:identity_file])
         require 'yaml'
-        YAML.load_file(CONFIG[:identity_file]).each_pair do |key, value|
+        YAML.load_file(COMMAND_LINE_OPTIONS[:identity_file]).each_pair do |key, value|
           if value.is_a?(Hash) && CONFIG.include?(key)
             CONFIG[key].merge!(value)
           else

@@ -39,7 +39,7 @@ module Chimps
       @argv = argv
       run_options_definers
       parse_command_line!
-      Chimps::Config.load
+      resolve_options!
     end
 
     # The name of this command, including the
@@ -68,6 +68,14 @@ module Chimps
         raise CLIError.new("#{e.message}.  Try `chimps help #{name}'")
       end
     end
+
+    # Ensure that certain options (verbosity, log file) that can be
+    # passed on the command-line override those stored in a
+    # configuration file (if present).
+    def resolve_options!
+      Chimps::Config.load       # load defaults from config file
+      Chimps::CONFIG.merge!(Chimps::COMMAND_LINE_OPTIONS) # overwrites from command line if necessary
+    end
       
     # Run all methods beginning with +define+ and ending with +option+
     # or +options+.
@@ -83,16 +91,21 @@ module Chimps
     # such options at the moment are <tt>-v</tt> (or
     # <tt>--[no-]verbose</tt>) for verbosity, and <tt>-i</tt> (or
     # <tt>--identity-file</tt>) for setting the identify file to use.
+    # <tt>--log-file</tt>) for setting the log file to use.
     def define_common_options
       separator self.class::HELP
       separator "\nOptions include:"
       
-      on("-v", "--[no-]verbose", "Be verbose, or not.") do |v|
-        Chimps::CONFIG[:verbose] = v
+      on("-v", "--[no-]verbose", "Be verbose, or not.") do |verbose|
+        Chimps::COMMAND_LINE_OPTIONS[:verbose] = verbose
       end
       
-      on("-i", "--identity-file PATH", "Use the given YAML identify file to authenticate with Infochimps instead of the default (~/.chimps) ") do |i|
-        Chimps::CONFIG[:identity_file] = File.expand_path(i)
+      on("-i", "--identity-file PATH", "Use the given YAML identify file to authenticate with Infochimps instead of the default (~/.chimps) ") do |path|
+        Chimps::COMMAND_LINE_OPTIONS[:identity_file] = File.expand_path(path)
+      end
+
+      on("-l", "--log-file PATH", "Use the given path to log Chimps output (`-' is interpreted as $stdout).") do |path|
+        Chimps::COMMAND_LINE_OPTIONS[:log_file] = path # don't expand_path as it might be a `-'
       end
     end
 
