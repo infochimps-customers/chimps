@@ -47,8 +47,7 @@ module Chimps
       # @option options [String, IMW::Resource] archive the path to the archive to create (defaults to IMW::Workflows::Downloader#default_archive_path)
       # @option options [String] fmt the data format to annotate the upload with
       def initialize options={}
-        require 'imw'
-        IMW.verbose      = Chimps.verbose?
+        require_imw
         @dataset         = options[:dataset] or raise PackagingError.new("Must provide the ID or handle of a dataset to upload data to.")
         self.local_paths = options[:local_paths]   # must come before self.archive=
         self.archive     = options[:archive]
@@ -105,24 +104,43 @@ module Chimps
         @archive = potential_package
       end
 
+      # Return the summarizer responsible for summarizing data on this
+      # upload.
+      #
+      # @return [IMW::Tools::Summarizer]
+      def summarizer
+        @summarizer ||= IMW::Tools::Summarizer.new(local_paths)
+      end
+
       # Set the data format to annotate the upload with.
       #
       # If not provided, Chimps will use the Infinite Monkeywrench
       # (IMW) to try and guess the data format.  See
       # IMW::Tools::Summarizer for more information.
       def fmt= new_fmt=nil
-        @fmt ||= new_fmt || IMW::Tools::Summarizer.new(local_paths).most_common_data_format
+        @fmt ||= new_fmt || summarizer.most_common_data_format
       end
 
       # The default path to the archive that will be built.
       #
-      # Defaults to a ZIP file in the current directory named after
-      # the +dataset+'s ID or handle and the current time.
+      # Defaults to a file in the current directory named after the
+      # +dataset+'s ID or handle and the current time.  The package
+      # format (<tt>.zip</tt> or <tt>.tar.bz2</tt>) is determined by
+      # size, see
+      # Chimps::Workflows::Uploader#default_archive_extension.
       #
       # @return [String]
       def default_archive_path
         # in current working directory...
-        "chimps_#{dataset}-#{Time.now.strftime(Chimps::CONFIG[:timestamp_format])}.zip"
+        "chimps_#{dataset}-#{Time.now.strftime(Chimps::CONFIG[:timestamp_format])}.#{default_archive_extension}"
+      end
+
+      # Use <tt>zip</tt> if the data is less than 500 MB in size and
+      # <tt>tar.bz2</tt> otherwise.
+      #
+      # @return ['tar.bz2', 'zip']
+      def default_archive_extension
+        summarizer.total_size >= 524288000 ? 'tar.bz2' : 'zip'
       end
 
       # The URL to the <tt>README-infochimps</tt> file on Infochimps'
@@ -222,7 +240,7 @@ module Chimps
       #
       # @return [Hash]
       def package_data
-        { :package => {:path => token['key'], :fmt => token['fmt'], :pkg_size => archive.size, :pkg_fmt => archive.extension} }
+        { :package => {:path => token['key'], :fmt => token['fmt'], :pkg_size => archive.size, :pkg_fmt => archive.extension, :summary => summarizer.summary, :token_timestamp => token['timestamp'] } }
       end
 
       # Make a final POST request to Infochimps, creating the final
@@ -231,6 +249,17 @@ module Chimps
         package_creation_response = Request.new(package_creation_path, :signed => true, :data => package_data).post
         package_creation_response.print
         raise UploadError.new("Unable to notify Infochimps of newly uploaded data.") if package_creation_response.error?
+      end
+
+      protected
+      # Require IMW and match the IMW logger to the Chimps logger.
+      def require_imw
+        begin
+          require 'imw'
+        rescue LoadError
+          raise Chimps::Error.new("The Infinite Monkeywrench (IMW) gem is required to upload.")
+        end
+        IMW.verbose = Chimps.verbose?
       end
       
     end
