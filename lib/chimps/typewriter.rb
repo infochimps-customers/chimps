@@ -335,7 +335,7 @@ module Chimps
     def accumulate_api_account api_account
       # FIXME this is sort of ugly...
       self << "USERNAME:     #{api_account['owner']['username']}"
-      self << "API KEY:      #{api_account['api_key']}"
+      self << "API KEY:      #{api_account['apikey']}"
       self << "LAST UPDATED: #{api_account['updated_at']}"
     end
     

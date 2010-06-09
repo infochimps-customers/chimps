@@ -163,7 +163,7 @@ module Chimps
     end
 
     # Authenticate this request by stuffing the <tt>:requested_at</tt>
-    # and <tt>:api_key</tt> properties into its <tt>:query_params</tt>
+    # and <tt>:apikey</tt> properties into its <tt>:query_params</tt>
     # hash.
     #
     # Will do nothing at all if Chimps::Request#authenticate? returns
@@ -172,7 +172,7 @@ module Chimps
       return unless authenticate?
       raise Chimps::AuthenticationError.new("API key or secret missing from #{CONFIG[:identity_file]}") unless (authenticable? || @forgive_authentication_error)
       query_params[:requested_at] = Time.now.to_i.to_s
-      query_params[:api_key]      = Chimps::CONFIG[:site][:key]
+      query_params[:apikey]      = Chimps::CONFIG[:site][:key]
     end
 
     # Return an unsigned query string for this request.
@@ -261,7 +261,7 @@ module Chimps
     end
 
     # Authenticate this request by stuffing the <tt>:requested_at</tt>
-    # and <tt>:api_key</tt> properties into its <tt>:query_params</tt>
+    # and <tt>:apikey</tt> properties into its <tt>:query_params</tt>
     # hash.
     #
     # Will do nothing at all if Chimps::Request#authenticate? returns
