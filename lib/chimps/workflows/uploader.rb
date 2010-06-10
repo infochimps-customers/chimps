@@ -240,7 +240,8 @@ module Chimps
       #
       # @return [Hash]
       def package_data
-        { :package => {:path => token['key'], :fmt => token['fmt'], :pkg_size => archive.size, :pkg_fmt => archive.extension, :summary => summarizer.summary, :token_timestamp => token['timestamp'] } }
+        { :package => {:fmt => token['fmt'], :pkg_size => archive.size, :pkg_fmt => archive.extension, :summary => summarizer.summary, :token_timestamp => token['timestamp'] } }
+
       end
 
       # Make a final POST request to Infochimps, creating the final
