@@ -16,6 +16,12 @@ sensible name in the current directory but can also be customized.
 
 If the only file to be packaged is already a package (.zip, .tar,
 .tar.gz, &c.) then it will not be packaged again.
+
+Supplied paths are allowed to be remote files so someting like
+
+  chimps upload my-dataset path/to/local/file.txt http://my-site.com/path/to/remote/file.txt
+
+will work.
 EOF
 
       # The path to the archive
@@ -34,10 +40,10 @@ EOF
         argv.first
       end
 
-      # A list of local paths to upload.
+      # A list of paths to upload.
       #
       # @return [Array<String>]
-      def local_paths
+      def paths
         raise CLIError.new("Must provide some paths to upload") if argv.length < 2
         argv[1..-1]
       end
@@ -55,7 +61,7 @@ EOF
 
       # Upload the data.
       def execute!
-        Chimps::Workflows::Uploader.new(:dataset => dataset, :archive => archive, :local_paths => local_paths, :fmt => fmt).execute!
+        Chimps::Workflows::Up.new(:dataset => dataset, :archive => archive, :paths => paths, :fmt => fmt).execute!.print
       end
     end
   end

@@ -9,9 +9,22 @@ require 'chimps'
 
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each { |path| require path }
 
-Spec::Runner.configure do |config|
-  config.include Chimps::Test::CustomMatchers
+module Chimps
+  module Test
+    TMP_DIR   = "/tmp/chimps_test" unless defined?(TMP_DIR)
+  end
 end
 
-  
+Spec::Runner.configure do |config|
+  config.include Chimps::Test::CustomMatchers
 
+  config.before do
+    FileUtils.mkdir_p Chimps::Test::TMP_DIR
+    FileUtils.cd Chimps::Test::TMP_DIR
+  end
+  
+  config.after do
+    FileUtils.rm_rf Chimps::Test::TMP_DIR
+  end
+  
+end
