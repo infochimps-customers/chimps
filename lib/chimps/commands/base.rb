@@ -39,7 +39,7 @@ module Chimps
       @argv = argv
       run_options_definers
       parse_command_line!
-      resolve_options!
+      Chimps.boot!
     end
 
     # The name of this command, including the
@@ -69,14 +69,6 @@ module Chimps
       end
     end
 
-    # Ensure that certain options (verbosity, log file) that can be
-    # passed on the command-line override those stored in a
-    # configuration file (if present).
-    def resolve_options!
-      Chimps::Config.load       # load defaults from config file
-      Chimps::CONFIG.merge!(Chimps::COMMAND_LINE_OPTIONS) # overwrites from command line if necessary
-    end
-      
     # Run all methods beginning with +define+ and ending with +option+
     # or +options+.
     #
@@ -107,6 +99,11 @@ module Chimps
       on("-l", "--log-file PATH", "Use the given path to log Chimps output (`-' is interpreted as $stdout).") do |path|
         Chimps::COMMAND_LINE_OPTIONS[:log_file] = path # don't expand_path as it might be a `-'
       end
+
+      on("-q", "--skip-plugins", "Don't load plugins from Chimps::CONFIG[:plugins] directory.") do |bool|
+        Chimps::CONFIG[:skip_plugins] = true
+      end
+
     end
 
     # Run this command.
