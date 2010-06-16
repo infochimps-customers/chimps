@@ -6,17 +6,20 @@ module Chimps
 
     # Execute the Chimps command specified by +argv+.
     #
+    # Will exit the Ruby process with 0 on success or 1 on an error.
+    #
     # @param [Array<String>] argv
     def self.execute! argv
       begin
-        Runner.new(argv).execute!    
+        Runner.new(argv).execute!
+        return 0
       rescue Chimps::Error => e
         puts e.message
-        exit 1
+        return 1
       rescue => e
         $stderr.puts("#{e.message} (#{e.class})")
         $stderr.puts(e.backtrace.join("\n"))
-        exit 1
+        return 1
       end
     end
 
