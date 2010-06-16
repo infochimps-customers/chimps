@@ -60,6 +60,15 @@ module Chimps
             raise AuthenticationError.new("Unauthorized for an upload token for dataset #{dataset}")
           end
         end
+
+        # Parses the 'url' property of the response from Infochimps to
+        # determine the bucket name.
+        #
+        # @return [String]
+        def bucket
+          File.basename(response['url'])
+        end
+        
       end
     end
   end
