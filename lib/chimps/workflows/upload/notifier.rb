@@ -34,7 +34,6 @@ module Chimps
         #
         # @return [Hash]
         def data
-          puts token.inspect
           { :package => {:fmt => token['fmt'], :pkg_size => bundler.size, :pkg_fmt => bundler.pkg_fmt, :summary => bundler.summary, :token_timestamp => token['timestamp'] } }
         end
 
