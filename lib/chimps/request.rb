@@ -250,7 +250,7 @@ module Chimps
     #
     # @return [true, false]
     def authenticable?
-      !Chimps::CONFIG[:query][:key].blank? && !Chimps::CONFIG[:query][:secret].blank?
+      !Chimps::CONFIG[:query][:key].blank?
     end
 
     # The host to send requests to.
@@ -258,6 +258,13 @@ module Chimps
     # @return [String]
     def host
       @host ||= Chimps::CONFIG[:query][:host]
+    end
+
+    # All Query API requests must be signed.
+    #
+    # @return [true]
+    def authenticate?
+      return true
     end
 
     # Authenticate this request by stuffing the <tt>:requested_at</tt>
@@ -295,8 +302,6 @@ module Chimps
     def signed_query_string
       unsigned_query_string
     end
-    
-    
     
   end
 
