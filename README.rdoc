@@ -28,7 +28,7 @@ Then you can install Chimps with
 == API keys 
 
 You'll need an API key and secret from Infochimps before you can start
-adding or modifying datasets via the REST API.  {Sign up for an
+adding or modifying datasets via the Dataset API.  {Sign up for an
 Infochimps account}[http://infochimps.org/signup] and register for an
 API key.
 
@@ -46,7 +46,6 @@ Once you've registered for the API(s) you'll need to put them in your
     :query:
       :username: monkeyboy
       :key:      xxxxxxxxxxxxxxxxx
-      :secret:   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 = Usage
 
@@ -72,7 +71,7 @@ performing.
 
 === Testing
 
-You can test whether or not you have access to the Infochimps REST API
+You can test whether or not you have access to the Infochimps Dataset API
 with
 
   chimps test
@@ -220,22 +219,47 @@ being made (to the same dataset)
 You can also use Chimps in your own code to handle making requests of
 Infochimps.
 
-=== Using the REST API
+At present, Chimps' classes internally use the JSON API so you'll have
+to as well -- support for the XML API will be coming soon...
 
-The Chimps::Request class makes requests against the REST API.  Create
-a request by specifying a path on the Infochimps server (it _must_ end
-with <tt>.json</tt>).
+=== Configuration Options
+
+When invoked from the command-line, Chimps automatically reads
+configuration files before executing requests.  When used as a library
+via
+
+  require 'rubygems'
+  require 'chimps'
+
+Chimps will *NOT* read default configuration files.  You can force it
+to do so by calling
+
+  Chimps::Config.load
+
+which will load from the configuration file defined in
+Chimps::CONFIG[:identity_file].  You can alternatively set
+configuration options directly in Chimps::CONFIG yourself (they should
+match the structure of a <tt>~/.chimps</tt> file).
+
+=== Using the Dataset API
+
+You can find a complete list of Dataset API endpoints, expected
+parameters, return codes, documentation, and authentication
+requirements at http://infochimps.com/api.
+
+The Chimps::Request class makes requests against the Dataset API.
+Create a request by specifying a path on the Infochimps server (it
+_must_ end with <tt>.json</tt> for now).
 
   list_dataset_request = Chimps::Request.new('/datasets.json')
   list_dataset_request.get
 
-Some requests need be signed.  Assuming you've propertly initialized
-the <tt>Chimps::CONFIG</tt> Hash with the proper values (identical to
-the arrangement of the <tt>~/.chimps</tt> configuration file) you can
-simply ask the request to sign itself
+Assuming you've properly configured Chimps (see above) you ask the
+request to sign itself.
 
   authenticated_list_datasets_request = Chimps::Request.new('/datasets.json', :authenticate => true)
 
+(not necessary for a list datasets request, but you get the idea).
 You can also pass in query params
 
   authenticated_list_datasets_request_with_params = Chimps::Request.new('/datasets.json', :query_params => { :id => 'infochimps' }, :authenticate => true)
@@ -257,7 +281,7 @@ It works just the similarly to the Chimps::Request except that the
 path supplied is the path to the corresponding dataset on the {Query
 API}[http://api.infochimps.com].
 
-All QueryRequests must be authenticated.
+All QueryRequests will automatically be signed.
 
   authenticated_query_request = Chimps::QueryRequest.new('soc/net/tw/trstrank.json', :query_params => { :screen_name => 'infochimps' } )
   authenticated_query_request.get
@@ -271,7 +295,7 @@ authorization tokens).
 
 The three workflows implemented so far include
 
-- Chimps::Workflows::Uploader
+- Chimps::Workflows::Up
 - Chimps::Workflows::Downloader
 - Chimps::Workflows::BatchUpdater
 
