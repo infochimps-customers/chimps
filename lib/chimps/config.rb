@@ -9,7 +9,7 @@ module Chimps
 
   # Options that can be overriden by the command-line.
   COMMAND_LINE_OPTIONS = {
-    :identity_file    => File.expand_path(ENV["CHIMPS_RC"] || "~/.chimps"),
+    :identity_file    => ENV["CHIMPS_RC"] || (ENV["HOME"] && File.expand_path("~/.chimps"))
     # log_file -- will be specified on command line
     # verbose  -- will be specified on command line
   }
