@@ -22,7 +22,7 @@ module Chimps
 
     # Appears when printing help for this command.  Should consist of
     # general help or examples of the command iteslf.  Help on
-    # specific options is automatcally generated.
+    # specific options is automatically generated.
     HELP   = "Define #{self}::HELP when you subclass Chimps::Command"
 
     # The (processed) ARGV for this command.
