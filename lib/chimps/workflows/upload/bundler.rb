@@ -234,10 +234,11 @@ module Chimps
         def require_imw
           begin
             require 'imw'
+            IMW.log = Chimps.log
+            IMW.verbose = Chimps.verbose?
           rescue LoadError
             raise Chimps::Error.new("The Infinite Monkeywrench (IMW) gem is required to upload.")
           end
-          IMW.verbose = Chimps.verbose?
         end
         
       end
