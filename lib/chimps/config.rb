@@ -41,6 +41,11 @@ module Chimps
     CONFIG[:site][:username] or raise AuthenticationError.new("No site username set in #{Chimps::CONFIG[:identity_file]}")
   end
 
+  def self.version
+    version_path = File.join(File.dirname(__FILE__), '../../VERSION')
+    @version ||= File.exist?(version_path) && File.new(version_path).read
+  end
+
   # Defines methods to load the Chimps configuration.
   module Config
     

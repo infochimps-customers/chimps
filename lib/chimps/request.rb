@@ -10,7 +10,7 @@ module Chimps
   class Request < RestClient::Resource
 
     # Default headers to pass with every request.
-    DEFAULT_HEADERS = { :content_type => 'application/json', :accept => 'application/json' }
+    DEFAULT_HEADERS = { :content_type => 'application/json', :accept => 'application/json', :user_agent => "Chimps #{Chimps.version}" }
 
     # Path of the URL to submit to.  Must be a String.
     attr_accessor :path
