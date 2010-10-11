@@ -5,7 +5,7 @@ module Chimps
     # at Infochimps.
     class List < Chimps::Command
 
-      BANNER = "chimps list [OPTIONS]"
+      USAGE = "usage: chimps list [OPTIONS]"
       HELP   = <<EOF
 
 List resources of a given type (defaults to dataset).
@@ -14,24 +14,11 @@ Lists your resources by default but see options below.
 
 EOF
 
-      # Models that can be indexed (default first)
-      MODELS = %w[dataset license source]
       include Chimps::Utils::UsesModel
-
-      def define_options
-        on_tail("-a", "--all", "List all resources, not just those owned by you.") do |a|
-          @all = a
-        end
-
-        on_tail("-s", "--[no-]skip-column-names", "Don't print column names in output.") do |s|
-          @skip_column_names = s
-        end
-        
-      end
 
       # List all resources or just those owned by the Chimps user?
       def all?
-        @all
+        config[:all]
       end
 
       # Parameters to include in the query.
@@ -45,7 +32,7 @@ EOF
 
       # Issue the GET request.
       def execute!
-        Request.new(models_path, :params => params).get.print(:skip_column_names => @skip_column_names)
+        Request.new(models_path, :params => params).get.print(:skip_column_names => config[:skip_column_names])
       end
 
     end

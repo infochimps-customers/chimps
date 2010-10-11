@@ -98,6 +98,10 @@ module Chimps
             accumulate_resource(resource_name, resource_data)
           when %w[errors batch search api_account message].include?(resource_name.to_s)
             send("accumulate_#{resource_name}", resource_data)
+          when %w[message].include?(resource_name.to_s)
+            self << [resource_data]
+          when %w[error].include?(resource_name.to_s)
+            nil
           when :array  == resource_name         # constructed by Chimps::Response
             accumulate_listing(resource_data)
           when :string == resource_name         # constructed by Chimps::Response 

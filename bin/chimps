@@ -2,4 +2,4 @@
 $:.unshift(File.dirname(__FILE__) + '/../lib') unless $:.include?(File.dirname(__FILE__) + '/../lib')
 require "chimps"
 require 'chimps/cli'
-exit    Chimps::CLI.execute!(ARGV.dup)
+exit    Chimps::CLI.execute!

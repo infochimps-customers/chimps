@@ -1,6 +1,6 @@
 module Chimps
 
-  # The Chimps logger.  Set via Chimps::CONFIG[:log_file] and defaults
+  # The Chimps logger.  Set via Chimps::Config[:log] and defaults
   # to $stdout.
   #
   # @return [Logger]
@@ -31,15 +31,13 @@ module Chimps
       end
     end
 
-    protected
-    # Return either the path to the log file in
-    # Chimps::CONFIG[:log_file] or $stdout if the path is blank or
-    # equal to `-'.
+    # Return either the path to the log file in Chimps::Config[:log]
+    # or $stdout if the path is blank or equal to `-'.
     #
     # @return [String, $stdout] the path to the log or $stdout
     def self.log_file
-      if Chimps::CONFIG[:log_file]
-        Chimps::CONFIG[:log_file].strip == '-' ? $stdout : Chimps::CONFIG[:log_file]
+      if Chimps::Config[:log]
+        Chimps::Config[:log].strip == '-' ? $stdout : Chimps::Config[:log]
       else
         $stdout
       end

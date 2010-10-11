@@ -5,7 +5,7 @@ module Chimps
     # query API.
     class Query < Chimps::Command
 
-      BANNER = "usage: chimps query [OPTIONS] DATASET [PROP=VALUE] ..."
+      USAGE = "usage: chimps query [OPTIONS] DATASET [PROP=VALUE] ..."
       HELP   = <<EOF
 
 Make a query of the given DATASET on the Infochimps paid query API
@@ -34,8 +34,8 @@ EOF
       #
       # @return [String]
       def dataset
-        raise CLIError.new("Must provide a dataset to query.") if argv.first.blank?
-        argv.first
+        raise CLIError.new("Must provide a dataset to query.") if config.argv.first.blank?
+        config.argv.first
       end
 
       # The path on the Infochimps query API to query.
@@ -49,20 +49,14 @@ EOF
       #
       # @return [true, nil]
       def pretty_print?
-        @pretty_print
-      end
-
-      # Define options for queries.
-      def define_query_options
-        on_tail("-p", "--[no-]pretty-print", "Pretty print the output.") do |p|
-          @pretty_print = p
-        end
+        config[:pretty_print]
       end
 
       # The requests that will be sent to the server.
       #
       # @return [Array<Chimps::QueryRequest>]
       def requests
+        ensure_data_is_present!
         if data.is_a?(Hash)
           [QueryRequest.new(path, :query_params => data, :authenticate => true)]
         else # it's an Array, see Chimps::Utils::UsesYamlData

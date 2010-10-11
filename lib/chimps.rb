@@ -9,7 +9,6 @@ require 'chimps/utils'
 module Chimps
 
   autoload :Config,       'chimps/config'
-  autoload :CONFIG,       'chimps/config'
   autoload :CLI,          'chimps/cli'
   autoload :Command,      'chimps/commands/base'
   autoload :Commands,     'chimps/commands'
@@ -18,5 +17,12 @@ module Chimps
   autoload :Response,     'chimps/response'
   autoload :Typewriter,   'chimps/typewriter'
   autoload :Workflows,    'chimps/workflows'
+
+  # Load and resolve configuration.
+  def self.boot!
+    Config.read Config[:site_config] if File.exist?(Config[:site_config])
+    Config.read Config[:config]      if File.exist?(Config[:config])
+    Config.resolve!
+  end
   
 end

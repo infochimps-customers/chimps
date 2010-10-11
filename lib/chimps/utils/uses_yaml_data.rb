@@ -9,10 +9,8 @@ module Chimps
         false
       end
 
-      attr_reader :data_file
-
       def data
-        @data ||= merge_all *(data_from_stdin + data_from_file + data_from_command_line)
+        @data ||= merge_all(*(data_from_stdin + data_from_file + data_from_command_line)) || {}
       end
       
       protected
@@ -38,13 +36,13 @@ module Chimps
               d.merge!(obj)
             end
           end
-        else raise CLIError.new("Unsuitable YAML data type #{data_type} -- can only combine Hashes and Arrays")
+        else raise CLIError.new("Incompatible YAML data type #{data_type} -- can only combine Hashes and Arrays")
         end
       end
 
       def params_from_command_line
         returning([]) do |d|
-          argv.each_with_index do |arg, index|
+          config.argv.each_with_index do |arg, index|
             next if index == 0 && ignore_first_arg_on_command_line
             next unless arg =~ /^(\w+) *=(.*)$/
             name, value = $1.downcase.to_sym, $2.strip
@@ -55,7 +53,7 @@ module Chimps
             
       def yaml_files_from_command_line
         returning([]) do |d|
-          argv.each_with_index do |arg, index|
+          config.argv.each_with_index do |arg, index|
             next if index == 0 && ignore_first_arg_on_command_line            
             next if arg =~ /^(\w+) *=(.*)$/
             path = File.expand_path(arg)
@@ -74,7 +72,7 @@ module Chimps
       end
 
       def data_from_file
-        [data_file ? YAML.load_file(data_file) : nil]
+        [config[:data_file] ? YAML.load_file(File.expand_path(config[:data_file])) : nil]
       end
 
       def data_from_stdin
@@ -83,12 +81,6 @@ module Chimps
           YAML.load_stream($stdin).each do |document|
             d << document
           end
-        end
-      end
-
-      def define_data_options
-        on_tail("-d", "--data-file PATH", "Path to a file containing key=value data") do |p|
-          @data_file = File.expand_path(p)
         end
       end
 

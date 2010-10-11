@@ -5,7 +5,7 @@ module Chimps
     # working.
     class Test < Chimps::Command
 
-      BANNER = "usage: chimps test"
+      USAGE = "usage: chimps test"
       HELP = <<EOF
 
 Print diagnostic information on the API credentials being used by chimps
@@ -16,12 +16,11 @@ EOF
 
       # Path to submit test requests to.
       def path
-        "api_accounts/#{Chimps::CONFIG[:site][:key]}"
+        "api_accounts/#{Chimps::Config[:site][:key]}"
       end
 
       # Issue the request.
       def execute!
-        puts "Reading identity file at #{CONFIG[:identity_file]}" if Chimps.verbose?
         response = Chimps::Request.new(path, :sign => true).get
         if response.error?
           case 

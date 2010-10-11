@@ -5,7 +5,7 @@ module Chimps
     # Infochimps.
     class Update < Chimps::Command
 
-      BANNER = "usage: chimps update [OPTIONS] ID_OR_HANDLE [PROP=VALUE] ..."
+      USAGE = "usage: chimps update [OPTIONS] ID_OR_HANDLE [PROP=VALUE] ..."
       HELP   = <<EOF
 
 Updates a single resource of a given type (defaults to dataset)
@@ -16,8 +16,6 @@ from an input YAML file, or multiple YAML documents streamed in via
 STDIN, in order of decreasing precedence.
 EOF
 
-      # Models this command applies to (default first)
-      MODELS = %w[dataset source license]
       include Chimps::Utils::UsesModel
       include Chimps::Utils::UsesYamlData
       def ignore_first_arg_on_command_line

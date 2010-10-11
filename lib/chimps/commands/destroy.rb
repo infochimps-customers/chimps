@@ -5,7 +5,7 @@ module Chimps
     # Infochimps.
     class Destroy < Chimps::Command
 
-      BANNER = "usage: chimps destroy [OPTIONS] ID_OR_HANDLE"
+      USAGE = "usage: chimps destroy [OPTIONS] ID_OR_HANDLE"
       HELP   = <<EOF
 
 Destroys a resource of a given type (defaults to dataset) identified
@@ -13,8 +13,6 @@ by ID_OR_HANDLE.
 
 EOF
 
-      # Models this command applies to (default first)
-      MODELS = %w[dataset package source license]
       include Chimps::Utils::UsesModel
 
       # Issue the DELETE request.

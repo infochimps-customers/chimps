@@ -2,7 +2,8 @@ module Chimps
   module Commands
     class Help < Chimps::Command
 
-      BANNER = "usage: chimps help [COMMAND]"
+      USAGE = "usage: chimps help [OPTIONS] [COMMAND]"
+
       HELP = <<EOF
 
 This is the Infochimps command-line client.  You can use it to search,
@@ -58,7 +59,7 @@ for any of the commands above.
 = Setup
 
 Once you have obtained an API key and secret from Infochimps, place
-them in a file Chimps::CONFIG[:identity_file] in your home directory
+them in a file Chimps::Config[:config] in your home directory
 with the following format
 
   ---
@@ -74,12 +75,22 @@ with the following format
     :key: zei7eeloShoah3Ce
     :secret: eixairaichaxaaRe8eeya5moh8Uthahf0pi4eig7SoirohPhei6sai8aereu0yuepiefeipoozoegahchaeheedee8uphohoo9moongae8Fa0aih4BooSeiM
 EOF
+
+     
+      def fake_command name
+        Chimps::Commands.class_for(name).new(Chimps::Config.commands[name][:config])
+      end
       
       def execute!
-        if argv.first.blank?
-          puts self
+        if Chimps::Config.command?(config.argv.first)
+          command = fake_command(config.argv.first)
+          $stderr.puts command.class::USAGE
+          $stderr.puts command.class::HELP
+          command.config.dump_basic_help
+          Chimps::Config.dump_basic_help
         else
-          puts Chimps::Commands.construct(argv.first, [])
+          $stderr.puts Chimps::Config.usage
+          Chimps::Config.dump_help
         end
       end
 

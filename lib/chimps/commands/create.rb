@@ -5,7 +5,7 @@ module Chimps
     # Infochimps.
     class Create < Chimps::Command
 
-      BANNER = "usage: chimps create [OPTIONS] [PROP=VALUE] ..."
+      USAGE = "usage: chimps create [OPTIONS] [PROP=VALUE] ..."
       HELP   = <<EOF
 
 Create a single resource (defaults to a dataset) using the properties
@@ -16,8 +16,6 @@ from an input YAML file, or multiple YAML documents streamed in via
 STDIN, in order of decreasing precedence.
 EOF
 
-      # Models this command applies to (default first)
-      MODELS = %w[dataset source license]
       include Chimps::Utils::UsesModel
       include Chimps::Utils::UsesYamlData
 

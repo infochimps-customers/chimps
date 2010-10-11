@@ -197,7 +197,7 @@ module Chimps
         # @return [String]
         def default_archive_path
           # in current working directory...
-          "chimps_#{dataset}-#{Time.now.strftime(Chimps::CONFIG[:timestamp_format])}.#{default_archive_extension}"
+          "chimps_#{dataset}-#{Time.now.strftime(Chimps::Config[:timestamp_format])}.#{default_archive_extension}"
         end
 
         # end <tt>zip</tt> if the data is less than 500 MB in size and
@@ -213,13 +213,13 @@ module Chimps
         #
         # @return [String]
         def readme_url
-          File.join(Chimps::CONFIG[:site][:host], "/README-infochimps")
+          File.join(Chimps::Config[:site][:host], "/README-infochimps")
         end
 
         # The URL to the ICSS file for this dataset on Infochimps
         # servers
         def icss_url
-          File.join(Chimps::CONFIG[:site][:host], "datasets", "#{dataset}.yaml")
+          File.join(Chimps::Config[:site][:host], "datasets", "#{dataset}.yaml")
         end
 
         # Both the local paths and remote paths to package.

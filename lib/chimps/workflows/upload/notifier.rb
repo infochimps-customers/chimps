@@ -34,7 +34,7 @@ module Chimps
         #
         # @return [Hash]
         def data
-          { :package => {:fmt => token['fmt'], :pkg_size => bundler.size, :pkg_fmt => bundler.pkg_fmt, :summary => bundler.summary, :token_timestamp => token['timestamp'] } }
+          { :package => {:fmt => token['fmt'], :pkg_size => bundler.size, :pkg_fmt => bundler.pkg_fmt, :raw_summary => bundler.summary, :token_timestamp => token['timestamp'] } }
         end
 
         # Make a request to notify Infochimps of the new data.
