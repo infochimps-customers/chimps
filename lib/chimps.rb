@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'bundler/setup'
 require 'chimps/utils'
 
 # The Chimps module implements a Ruby-based command-line interface to

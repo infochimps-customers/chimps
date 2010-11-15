@@ -9,7 +9,7 @@ module Chimps
   # Raised when the user hasn't specified any API credentials or the
   # server rejects the user's API credentials.
   #
-  # Roughly corresponds to HTTP status code 401.
+  # Roughly corresponds to HTTP status code 401/403.
   AuthenticationError = Class.new(Error) 
 
   # Raised when the Infochimps server response is unexpected or
