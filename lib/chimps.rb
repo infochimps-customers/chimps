@@ -21,8 +21,8 @@ module Chimps
 
   # Load and resolve configuration.
   def self.boot!
-    Config.read Config[:site_config] if File.exist?(Config[:site_config])
-    Config.read Config[:config]      if File.exist?(Config[:config])
+    Config.read Config[:site_config] if Config[:site_config] && File.exist?(Config[:site_config])
+    Config.read Config[:config]      if Config[:config]      && File.exist?(Config[:config])
     Config.resolve!
   end
   
