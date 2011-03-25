@@ -1,16 +1,10 @@
 #!/usr/bin/env ruby
 source :gemcutter
 gem "json"
-gem "configliere"
+gem "configliere", ">= 0.3.2"
 gem 'rest-client', '>= 1.6.1', :require => 'restclient'
+gem 'addressable', :require => 'addressable/uri'
 
 group :test do
-  gem "rspec", "1.3.0", :require => 'spec'
+  gem "rspec"
 end
-
-group :upload do
-  gem 'imw', '>= 0.2.11'
-  gem 'activesupport', '2.3.5', :require => 'active_support'
-  gem 'addressable', :require => 'addressable/uri'
-end
-

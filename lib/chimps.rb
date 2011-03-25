@@ -1,29 +1,29 @@
 require 'rubygems'
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path('../Gemfile', File.dirname(__FILE__))
 require 'bundler/setup'
+require 'chimps/config'
 require 'chimps/utils'
 
-# The Chimps module implements a Ruby-based command-line interface to
-# the Infochimps data repository.
+# The Chimps module provides classes which make making requests at
+# Infochimps easy.
 #
 # Using this tool you can search, download, edit, and upload data and
 # metadata to and from Infochimps.
 module Chimps
 
-  autoload :Config,       'chimps/config'
-  autoload :CLI,          'chimps/cli'
-  autoload :Command,      'chimps/commands/base'
-  autoload :Commands,     'chimps/commands'
   autoload :Request,      'chimps/request'
-  autoload :QueryRequest, 'chimps/request'  
+  autoload :QueryRequest, 'chimps/query_request'  
   autoload :Response,     'chimps/response'
-  autoload :Typewriter,   'chimps/typewriter'
-  autoload :Workflows,    'chimps/workflows'
+  autoload :Download,     'chimps/workflows/download'
+  autoload :Upload,       'chimps/workflows/upload'
 
   # Load and resolve configuration.
   def self.boot!
-    Config.read Config[:site_config] if Config[:site_config] && File.exist?(Config[:site_config])
-    Config.read Config[:config]      if Config[:config]      && File.exist?(Config[:config])
-    Config.resolve!
+    config.read config[:site_config] if config[:site_config] && File.exist?(config[:site_config])
+    config.read config[:config]      if config[:config]      && File.exist?(config[:config])
+    config.resolve!
+    config[:dataset] = config[:site] if (! config[:dataset]) && config[:site] # backwards compatibility
+    true
   end
   
 end
