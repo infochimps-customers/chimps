@@ -1,15 +1,14 @@
-= Who /are/ these Chimps?
+= Who _are_ these Chimps?
 
 Infochimps[http://www.infochimps.com] is an online data marketplace
 and repository where anyone can find, share, and sell data.
 
 Infochimps offers two APIs for users to access and modify data
 
-- a {Dataset API}[http://www.infochimps.com/api] to list, show, create, update, and destroy datasets and associated resources on Infochimps[http://www.infochimps.com]
-- a {Query API}[http://www.infochimps.com/api] to query data from particular rows of these datasets
+- a {Dataset API}[http://www.infochimps.com/apis] to list, show, create, update, and destroy datasets and associated resources on Infochimps[http://www.infochimps.com]
+- a {Query API}[http://www.infochimps.com/apis] to query data from particular rows of these datasets
 
-*Chimps* is a Ruby library that makes interacting with Infochimps'
- APIs as easy as
+*Chimps* is a Ruby library that makes interacting with Infochimps' APIs as easy as
 
   require 'rubygems'
   require 'chimps'
@@ -54,7 +53,7 @@ for an Infochimps account}[http://www.infochimps.com/signup] and get
 your {Dataset API key}[http://www.infochimps.com/me].
 
 To query particular rows from a dataset, you'll also need to get a
-{Query API key}[http://www.infochimps.com/api].
+{Query API key}[http://www.infochimps.com/apis].
 
 You can always explicitly set values in <tt>Chimps.config</tt> like
 in the first example at the top of this +README+ but you may find it
@@ -68,7 +67,7 @@ configuration file looks like
 
     # -*-yaml-*-
     # ~/.chimps
-    :site:
+    :dataset:
       :key:      xxxxxxxxxxxxxxxx
       :secret:   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     :query:
@@ -92,17 +91,17 @@ when you require it:
 
 == Dataset API
 
-You can use the {Dataset API}[http://www.infochimps.com/api] to
+You can use the {Dataset API}[http://www.infochimps.com/apis] to
 search, list, show, create, update, or destroy datasets and other
 resources at Infochimps.
 
-If instead of /creating/ a dataset with 100,000 baby names you want to
-/query/ a dataset of 100,000 baby names then you should skip down to
+If instead of _creating_ a dataset with 100,000 baby names you want to
+_query_ a dataset of 100,000 baby names then you should skip down to
 the Query API section below.
 
 You can find a complete list of Dataset API endpoints, expected
 parameters, return codes, documentation, and authentication
-requirements at http://www.infochimps.com/api.
+requirements at http://www.infochimps.com/apis.
 
 === A Simple +GET+ Request
 
@@ -143,7 +142,7 @@ not require the request to be signed in any way.  Other requests,
 which reveal your private information or create new datasets, &c. on
 Infochimps will require your Dataset API secret to sign.  You can see
 a full list of the Dataset API endpoints available and whether or not
-requests to each need to be signed at http://www.infochimps.com/api.
+requests to each need to be signed at http://www.infochimps.com/apis.
 
 Assuming you've properly configured Chimps (see above) you ask the
 request to sign itself.
@@ -176,7 +175,7 @@ Here's how to you might create a new dataset via a +POST+ request:
 
 You can find a complete list of what Dataset API endpoints are
 available and what parameters they take at
-http://www.infochimps.com/api.
+http://www.infochimps.com/apis.
 
 === Using the Query API
 
