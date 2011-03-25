@@ -39,7 +39,7 @@ module Chimps
     #
     # @return [Chimps::Request]
     def token_request
-      @token_request ||= Request.new("/datasets/#{dataset}/downloads", :sign_if_possible => true)
+      @token_request ||= Request.new("/download_tokens", :body => {:download_token => {:dataset_id => dataset}}, :sign_if_possible => true)
     end
 
     # A download token from Infochimps containing a signed URL from

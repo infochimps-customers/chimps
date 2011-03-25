@@ -23,7 +23,7 @@ describe Chimps::Request do
     end
 
     it "should encode a Hash of query string parameters when given" do
-      Chimps::Request.new('/path/to/something', :query_params => {:foo => 'bar', :fuzz => 'booz'}).query_string.should == 'foo=bar&fuzz=booz'
+      Chimps::Request.new('/path/to/something', :query_params => {:foo => 'bar', :fuzz => 'booz'}).query_string.should include('foo=bar', 'fuzz=booz')
     end
 
     it "should properly URL encode the query string it generates" do
