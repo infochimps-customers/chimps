@@ -5,7 +5,7 @@ gem "configliere", ">= 0.3.2"
 gem 'rest-client', '>= 1.6.1', :require => 'restclient'
 gem 'addressable', :require => 'addressable/uri'
 
-group :test do
+group :development do
   gem "rspec"
 end
 
