@@ -29,3 +29,4 @@ TAGS
 \#*
 \.#*
 pkg/*
+Gemfile.lock
