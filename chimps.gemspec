@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
-ENV['BUNDLE_GEMFILE'] = File.dirname(__FILE__) + '/Gemfile'
-$:.push File.expand_path("../lib", __FILE__)
-require 'bundler'
+lib = File.expand_path("../lib", __FILE__)
+$:.unshift(lib) unless $:.include?(lib)
+
 Gem::Specification.new do |s|
   s.name             = "chimps"
   s.version          = File.read(File.expand_path("../VERSION", __FILE__))
@@ -14,7 +14,13 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README.rdoc"]
   s.files            = `git ls-files`.split("\n")
   s.test_files       = `git ls-files -- spec/*`.split("\n")
-  s.executables      = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
   s.require_paths    = ["lib"]
+  
+  s.add_dependency "json"
+  s.add_dependency "configliere", ">= 0.3.2"
+  s.add_dependency "rest-client", ">= 1.6.1"
+  s.add_dependency "addressable"
+
+  s.add_development_dependency "rspec", ">= 2.0.0"
 end
 
