@@ -4,10 +4,13 @@ require 'json'
 module Chimps
 
   # A class to wrap responses from the Infochimps API.
-  class Response < Hash
+  class Response
 
     # The response body.
     attr_reader :body
+
+    # The parsed data of the body
+    attr_reader :data
 
     # The error message for this response, if it was an error.
     #
@@ -16,8 +19,7 @@ module Chimps
     # initializing a Chimps::Response by a Chimps::Request.
     attr_reader :error
     
-    # Return a response built from a String with the
-    # RestClient::Response module mixed-in.
+    # Return a Response from the +body+.
     #
     # If <tt>:error</tt> is passed then this response is is considered
     # an error with the given message.
@@ -27,7 +29,6 @@ module Chimps
     # @option options [String] error the error message
     # @return [Chimps::Response]
     def initialize body, options={}
-      super()
       @body  = body
       @error = options[:error]
     end
@@ -64,15 +65,7 @@ module Chimps
     #
     # @return [Chimps::Response]
     def parse!
-      data = parse_response_body
-      case data
-        # hack...sometimes we get back an array instead of a
-        # hash...should change the API at Chimps end
-      when Hash   then merge!(data)
-      when Array  then self[:array]  = data
-      when String then self[:string] = data
-      else nil
-      end
+      @data   = parse_response_body
       @parsed = true
       self
     end
@@ -98,20 +91,6 @@ module Chimps
       !! @error
     end
 
-    # Return a new Hash consisting of the data from this response.
-    #
-    # FIXME This is used when pretty printing -- though it shouldn't
-    # be necessary.
-    #
-    # @return [Hash]
-    def data
-      {}.tap do |d|
-        each_pair do |key, value|
-          d[key] = value
-        end
-      end
-    end
-
     # Print this response.
     #
     # @param [Hash] options
@@ -121,23 +100,23 @@ module Chimps
       output = (options[:to] || $stdout)
       if error?
         parse!
-        output.puts self['errors']  if self['errors']
-        output.puts self['message'] if self['message']
+        output.puts data['errors']  if data['errors']
+        output.puts data['message'] if data['message']
       else
         case
         when options[:yaml]
           parse!
-          output.puts self.to_yaml
+          output.puts data.to_yaml
         when options[:json] && options[:pretty]
           parse!
           if options[:pretty]
-            output.puts JSON.pretty_generate(self)
+            output.puts JSON.pretty_generate(data)
           else
-            output.puts self.to_json
+            output.puts data.to_json
           end
         when headers[:content_type] =~ /json/i && options[:pretty]
           parse!
-          output.puts JSON.pretty_generate(self)
+          output.puts JSON.pretty_generate(data)
         when headers[:content_type] =~ /tab/i && options[:pretty]
           Utils::Typewriter.new(self).print
         else
@@ -153,6 +132,10 @@ module Chimps
       end
     end
 
+    def method_missing name, *args, &block
+      data.send(name, *args, &block)
+    end
+    
     protected
 
     # Construct and return a line of diagnostic information on this

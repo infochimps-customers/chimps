@@ -5,7 +5,7 @@ and repository where anyone can find, share, and sell data.
 
 Infochimps offers two APIs for users to access and modify data
 
-- a {Dataset API}[http://www.infochimps.com/apis] to list, show, create, update, and destroy datasets and associated resources on Infochimps[http://www.infochimps.com]
+- a {Catalog API}[http://www.infochimps.com/catalog-api] to list, show, create, update, and destroy datasets and associated resources on Infochimps[http://www.infochimps.com]
 - a {Query API}[http://www.infochimps.com/apis] to query data from particular rows of these datasets
 
 *Chimps* is a Ruby library that makes interacting with Infochimps' APIs as easy as
@@ -15,8 +15,8 @@ Infochimps offers two APIs for users to access and modify data
   
   # Sign up for an Infochimps account and get your keys from
   # http://www.infochimps.com/me
-  Chimps.config[:dataset][:key]    = "Your Dataset API key"
-  Chimps.config[:dataset][:secret] = "Your Dataset API secret"
+  Chimps.config[:catalog][:key]    = "Your Catalog API key"
+  Chimps.config[:catalog][:secret] = "Your Catalog API secret"
 
   # list datasets in JSON
   Chimps::Request.new("/datasets").get.print
@@ -50,7 +50,7 @@ Then you can install Chimps with
 You'll need a Dataset API key and secret from Infochimps before you
 can start adding or modifying datasets via the Dataset API.  {Sign up
 for an Infochimps account}[http://www.infochimps.com/signup] and get
-your {Dataset API key}[http://www.infochimps.com/me].
+your {Catalog API key}[http://www.infochimps.com/me].
 
 To query particular rows from a dataset, you'll also need to get a
 {Query API key}[http://www.infochimps.com/apis].
@@ -67,7 +67,7 @@ configuration file looks like
 
     # -*-yaml-*-
     # ~/.chimps
-    :dataset:
+    :catalog:
       :key:      xxxxxxxxxxxxxxxx
       :secret:   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     :query:
@@ -89,23 +89,23 @@ when you require it:
 
 = Making Requests
 
-== Dataset API
+== Catalog API
 
-You can use the {Dataset API}[http://www.infochimps.com/apis] to
-search, list, show, create, update, or destroy datasets and other
+You can use the {Catalog API}[http://www.infochimps.com/catalog-api]
+to search, list, show, create, update, or destroy datasets and other
 resources at Infochimps.
 
 If instead of _creating_ a dataset with 100,000 baby names you want to
 _query_ a dataset of 100,000 baby names then you should skip down to
 the Query API section below.
 
-You can find a complete list of Dataset API endpoints, expected
+You can find a complete list of Catalog API endpoints, expected
 parameters, return codes, documentation, and authentication
-requirements at http://www.infochimps.com/apis.
+requirements at http://www.infochimps.com/catalog-api.
 
 === A Simple +GET+ Request
 
-The <tt>Chimps::Request</tt> class makes requests against the Dataset
+The <tt>Chimps::Request</tt> class makes requests against the Catalog
 API.  Create a request by specifying a path on the Infochimps server.
 The extension of the path determines the MIME type that Infochimps
 will respond with:
@@ -137,12 +137,13 @@ look inside:
 
 === A Signed +GET+ Request
 
-Many Dataset API calls at Infochimps (like listing datasets, above) do
+Many Catalog API calls at Infochimps (like listing datasets, above) do
 not require the request to be signed in any way.  Other requests,
 which reveal your private information or create new datasets, &c. on
-Infochimps will require your Dataset API secret to sign.  You can see
-a full list of the Dataset API endpoints available and whether or not
-requests to each need to be signed at http://www.infochimps.com/apis.
+Infochimps will require your Catalog API secret to sign.  You can see
+a full list of the Catalog API endpoints available and whether or not
+requests to each need to be signed at
+http://www.infochimps.com/catalog-api.
 
 Assuming you've properly configured Chimps (see above) you ask the
 request to sign itself.
@@ -153,7 +154,7 @@ request to sign itself.
   response.print
   # lotsa JSON...but only about *your* datasets
 
-The authentication mechanism uses the Dataset API secret (which is
+The authentication mechanism uses the Catalog API secret (which is
 shared between you and Infochimps) to sign either the query string
 (for the case of +GET+ and +DELETE+ requests) or the request body (for
 +POST+ and +PUT+ requests).
@@ -173,9 +174,9 @@ Here's how to you might create a new dataset via a +POST+ request:
   response.parse!
   response['dataset']['id'] #=> 20876
 
-You can find a complete list of what Dataset API endpoints are
+You can find a complete list of what Catalog API endpoints are
 available and what parameters they take at
-http://www.infochimps.com/apis.
+http://www.infochimps.com/catalog-api.
 
 === Using the Query API
 
@@ -212,7 +213,7 @@ through the Infochimps website.
 = Contributing
 
 Chimps is an open source project created by the Infochimps team to
-encourage adoption of Infochimps' Dataset & Query APIs.  The official
+encourage adoption of Infochimps' Catalog & Query APIs.  The official
 repository is hosted on GitHub
 
   http://github.com/infochimps/chimps

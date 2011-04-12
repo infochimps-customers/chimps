@@ -21,8 +21,9 @@ module Chimps
   def self.boot!
     config.read config[:site_config] if config[:site_config] && File.exist?(config[:site_config])
     config.read config[:config]      if config[:config]      && File.exist?(config[:config])
+    config[:catalog] = config[:site]    if (! config[:catalog]) && config[:site]    # backwards compatibility
+    config[:catalog] = config[:dataset] if (! config[:catalog]) && config[:dataset] # backwards compatibility
     config.resolve!
-    config[:dataset] = config[:site] if (! config[:dataset]) && config[:site] # backwards compatibility
     true
   end
   

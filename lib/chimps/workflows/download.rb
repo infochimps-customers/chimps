@@ -51,6 +51,8 @@ module Chimps
         case response.code
         when 301, 302, 307
           response.follow_redirection(request, result, &block)
+        when 401
+          raise Error.new("Not authorized to download #{dataset}")
         when 200
           response.return!(request, result, &block)
         else

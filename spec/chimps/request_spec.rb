@@ -3,9 +3,9 @@ require File.expand_path('../spec_helper', File.dirname(__FILE__))
 describe Chimps::Request do
 
   before do
-    Chimps.config[:dataset][:host]   = 'http://foobar.com'
-    Chimps.config[:dataset][:key]    = 'spec_key'
-    Chimps.config[:dataset][:secret] = 'secret'
+    Chimps.config[:catalog][:host]   = 'http://foobar.com'
+    Chimps.config[:catalog][:key]    = 'spec_key'
+    Chimps.config[:catalog][:secret] = 'secret'
   end
 
   describe "generating the base URL with query string" do
@@ -38,12 +38,12 @@ describe Chimps::Request do
     end
 
     it "should raise an error if asked to sign and no credentials are available" do
-      Chimps.config[:dataset][:key] = nil
+      Chimps.config[:catalog][:key] = nil
       lambda { Chimps::Request.new('/path/to/something', :sign => true).query_string }.should raise_error(Chimps::AuthenticationError)
     end
 
     it "should not raise an error if asked to sign_if_possible and no credentials are avialable" do
-      Chimps.config[:dataset][:key] = nil
+      Chimps.config[:catalog][:key] = nil
       lambda { Chimps::Request.new('/path/to/something', :sign_if_possible => true).query_string }.should_not raise_error(Chimps::AuthenticationError)
     end
 
@@ -79,7 +79,7 @@ describe Chimps::Request do
     end
 
     it "should swallow application-level errors" do
-      Chimps.config[:dataset][:host]   = 'http://www.infochimps.com'
+      Chimps.config[:catalog][:host]   = 'http://www.infochimps.com'
       Chimps::Request.new('/some/made/up/path').get.code.should == 404
     end
 

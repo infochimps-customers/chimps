@@ -102,7 +102,7 @@ module Chimps
     #
     # @return [true, false]
     def authenticable?
-      !Chimps.config[:dataset][:key].blank? && !Chimps.config[:dataset][:secret].blank?
+      !Chimps.config[:catalog][:key].blank? && !Chimps.config[:catalog][:secret].blank?
     end
     alias_method :signable?, :authenticable?
 
@@ -110,7 +110,7 @@ module Chimps
     #
     # @return [String]
     def host
-      @host ||= Chimps.config[:dataset][:host]
+      @host ||= Chimps.config[:catalog][:host]
     end
 
     # Return the base URL for this request, consisting of the host and
@@ -203,9 +203,9 @@ module Chimps
     # false.
     def authenticate_if_necessary!
       return unless authenticate? && should_encode?
-      raise Chimps::AuthenticationError.new("Dataset API key (Chimps.config[:dataset][:key]) or secret (Chimps.config[:dataset][:secret]) missing from #{Chimps.config[:config]} or #{Chimps.config[:site_config]}") unless (authenticable? || @forgive_authentication_error)
+      raise Chimps::AuthenticationError.new("Catalog API key (Chimps.config[:catalog][:key]) or secret (Chimps.config[:catalog][:secret]) missing from #{Chimps.config[:config]} or #{Chimps.config[:site_config]}") unless (authenticable? || @forgive_authentication_error)
       query_params[:requested_at] = Time.now.to_i.to_s
-      query_params[:apikey]       = Chimps.config[:dataset][:key]
+      query_params[:apikey]       = Chimps.config[:catalog][:key]
     end
 
     # Return an unsigned query string for this request.
@@ -246,9 +246,9 @@ module Chimps
     # @param [String]
     # @return [String]
     def sign string
-      raise Chimps::AuthenticationError.new("No API secret stored in #{Chimps.config[:config]} or #{Chimps.config[:site_config]}.") unless (authenticable? || @forgive_authentication_error)
+      raise Chimps::AuthenticationError.new("No Catalog API secret stored in #{Chimps.config[:config]} or #{Chimps.config[:site_config]}.  Set Chimps.config[:catalog][:secret].") unless (authenticable? || @forgive_authentication_error)
       require 'digest/md5'
-      Digest::MD5.hexdigest(string + Chimps.config[:dataset][:secret])
+      Digest::MD5.hexdigest(string + Chimps.config[:catalog][:secret])
     end
 
     # Append the signature to the unsigned query string.

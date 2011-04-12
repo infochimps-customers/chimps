@@ -25,10 +25,10 @@ module Chimps
     config.define 'query.host',      :description => "Host to send Query API requests to", :type => String, :default => "http://api.infochimps.com", :no_help => true, :env_var => "APEYEYE", :no_help => true
     config.define 'query.key',       :description => "API key for the Query API", :type => String, :no_help => true
     
-    config.define 'dataset.username',   :description => "Your Infochimps username", :type => String
-    config.define 'dataset.host',       :description => "Host to send Dataset API requests to", :type => String, :default => "http://www.infochimps.com", :env_var => "GEORGE", :no_help => true
-    config.define 'dataset.key',        :description => "API key for the Dataset API", :type => String
-    config.define 'dataset.secret',     :description => "API secret for the Dataset API", :type => String
+    config.define 'catalog.username',   :description => "Your Infochimps username", :type => String
+    config.define 'catalog.host',       :description => "Host to send Catalog API requests to", :type => String, :default => "http://www.infochimps.com", :env_var => "GEORGE", :no_help => true
+    config.define 'catalog.key',        :description => "API key for the Catalog API", :type => String
+    config.define 'catalog.secret',     :description => "API secret for the Catalog API", :type => String
   end
   define_config
 
@@ -37,13 +37,6 @@ module Chimps
   # @return [true, false, nil]
   def self.verbose?
     config[:verbose]
-  end
-
-  # The username Chimps will pass to Infochimps.
-  #
-  # @return [String]
-  def self.username
-    config[:dataset][:username] or raise AuthenticationError.new("No Dataset API username set in #{Chimps.config[:config]} or #{Chimps.config[:site_config]}")
   end
 
   # The current Chimps library version.

@@ -8,3 +8,5 @@ gem 'addressable', :require => 'addressable/uri'
 group :test do
   gem "rspec"
 end
+
+gemspec

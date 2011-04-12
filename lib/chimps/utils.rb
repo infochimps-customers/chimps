@@ -1,5 +1,4 @@
 require 'chimps/config'
-# require 'chimps/utils/extensions'
 require 'chimps/error'
 
 module Chimps
