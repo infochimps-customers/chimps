@@ -25,7 +25,6 @@ pkg
 .bzr
 .hg
 .svn
-/chimps.gemspec
 TAGS
 \#*
 \.#*
