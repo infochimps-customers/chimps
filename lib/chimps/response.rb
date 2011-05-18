@@ -162,7 +162,7 @@ module Chimps
     #
     # @return [Hash, Array, String]
     def parse_response_body
-      return {} if body.blank? || body == 'null'
+      return {} if body.nil? || body.empty? || body == 'null'
       if content_type == :yaml
         begin
           YAML.load(StringIO.new(body))
