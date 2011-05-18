@@ -54,7 +54,7 @@ describe Chimps::Request do
 
   describe "generating the request body" do
     it "should have no body by default" do
-      Chimps::Request.new('/path/to/something').body.should be_blank
+      Chimps::Request.new('/path/to/something').body.should be_empty
     end
 
     it "should encode a Hash of parameters when given" do

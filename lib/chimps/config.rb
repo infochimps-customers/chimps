@@ -7,7 +7,7 @@ module Chimps
   #
   # @return [Configliere::Param]
   def self.config
-    @config ||= Configliere.new
+    @config ||= Configliere::Param.new
   end
 
   # Backwards compatibility for version < 0.3.0.

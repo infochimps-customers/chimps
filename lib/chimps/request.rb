@@ -102,7 +102,7 @@ module Chimps
     #
     # @return [true, false]
     def authenticable?
-      !Chimps.config[:catalog][:key].blank? && !Chimps.config[:catalog][:secret].blank?
+      Chimps.config[:catalog][:key] && Chimps.config[:catalog][:secret]
     end
     alias_method :signable?, :authenticable?
 
@@ -261,7 +261,7 @@ module Chimps
     # @return [String]
     def signed_query_string
       return unsigned_query_string unless should_encode?
-      text_to_sign = ((body == true || (! body.blank?)) ? encoded_body : unsigned_query_string_stripped)
+      text_to_sign = ((body == true || (! body.empty?)) ? encoded_body : unsigned_query_string_stripped)
       signature    = sign(text_to_sign)
       "#{unsigned_query_string}&signature=#{signature}"
     end

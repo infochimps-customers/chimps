@@ -9,7 +9,7 @@ module Chimps
     #
     # @return [true, false]
     def authenticable?
-      !Chimps.config[:query][:key].blank?
+      Chimps.config[:query][:key]
     end
 
     def url_with_query_string
