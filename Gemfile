@@ -1,3 +1,2 @@
-#!/usr/bin/env ruby
-source :gemcutter
+source :rubygems
 gemspec
