@@ -34,4 +34,4 @@ PLATFORMS
 DEPENDENCIES
   chimps!
   rake (>= 0.9.2)
-  rspec (>= 2.0.0)
+  rspec (>= 2.6.0)
