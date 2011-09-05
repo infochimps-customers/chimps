@@ -30,7 +30,6 @@ TAGS
 \#*
 \.#*
 pkg/*
-Gemfile.lock
 .bundle
 .vendor
 
