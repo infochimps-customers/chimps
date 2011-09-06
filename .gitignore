@@ -32,4 +32,4 @@ TAGS
 pkg/*
 .bundle
 .vendor
-
+.yardoc
