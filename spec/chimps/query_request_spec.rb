@@ -4,7 +4,7 @@ describe Chimps::QueryRequest do
 
   before do
     Chimps.config[:query][:host]  = 'http://qubar.com'
-    Chimps.config[:query][:key]   = 'spec_key'
+    Chimps.config[:apikey]   = 'spec_key'
   end
 
   describe "generating the base URL with query string" do
@@ -29,7 +29,7 @@ describe Chimps::QueryRequest do
     end
 
     it "should raise an error if no credentials are available" do
-      Chimps.config[:query][:key] = nil
+      Chimps.config[:apikey] = nil
       lambda { Chimps::QueryRequest.new('/path/to/something').query_string }.should raise_error(Chimps::AuthenticationError)
     end
 

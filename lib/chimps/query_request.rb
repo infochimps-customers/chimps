@@ -9,7 +9,7 @@ module Chimps
     #
     # @return [true, false]
     def authenticable?
-      Chimps.config[:query][:key]
+      Chimps.config[:apikey]
     end
 
     def url_with_query_string
@@ -46,14 +46,14 @@ module Chimps
     # false.
     def authenticate_if_necessary!
       return unless authenticate? && should_encode?
-      raise Chimps::AuthenticationError.new("Query API key (Chimps.config[:query][:key]) from #{Chimps.config[:config]} or #{Chimps.config[:site_config]}") unless authenticable?
-      query_params[:requested_at] = Time.now.to_i.to_s
-      query_params[:apikey]       = Chimps.config[:query][:key]
+      raise Chimps::AuthenticationError.new("API key (Chimps.config[:apikey]) from #{Chimps.config[:config]} or #{Chimps.config[:site_config]}") unless authenticable?
+      query_params[:requested_at] = Time.now.to_i.to_s # XXX This doesn't appear to be necessary
+      query_params[:apikey]       = Chimps.config[:apikey]
     end
     
     # Append the signature to the unsigned query string.
     #
-    # The signature made from the Chimps user's API secret and either
+    # The signature made from the Chimps user's API Key and either
     # the query string text (stripped of <tt>&</tt> and <tt>=</tt>)
     # for GET and DELETE requests or the request body for POST and PUT
     # requests.

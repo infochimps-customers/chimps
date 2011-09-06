@@ -10,9 +10,6 @@ module Chimps
     @config ||= Configliere::Param.new
   end
 
-  # Backwards compatibility for version < 0.3.0.
-  Config = config
-  
   def self.define_config
     config.define :site_config,      :description => "Path to site-wide configuration file", :env_var => "CHIMPS_ETC", :default => "/etc/chimps/chimps.yaml", :type => String, :no_help => true
     config.define :config,           :description => "Path to user configuration file", :env_var => "CHIMPS_RC", :default => (ENV["HOME"] && File.expand_path("~/.chimps")), :flag => :c, :type => String
@@ -22,13 +19,11 @@ module Chimps
     config.define :skip_plugins,     :description => "Don't load any plugins", :flag => :q, :type => :boolean
     config.define :verbose,          :description => "Be verbose", :flag => :v, :type => :boolean
     
-    config.define 'query.host',      :description => "Host to send Query API requests to", :type => String, :default => "http://api.infochimps.com", :no_help => true, :env_var => "APEYEYE", :no_help => true
-    config.define 'query.key',       :description => "API key for the Query API", :type => String, :no_help => true
+    config.define 'username',        :description => "Your Infochimps username", :type => String
+    config.define 'apikey',          :description => "API key for the Query API", :type => String, :no_help => true
     
-    config.define 'catalog.username',   :description => "Your Infochimps username", :type => String
-    config.define 'catalog.host',       :description => "Host to send Catalog API requests to", :type => String, :default => "http://www.infochimps.com", :env_var => "GEORGE", :no_help => true
-    config.define 'catalog.key',        :description => "API key for the Catalog API", :type => String
-    config.define 'catalog.secret',     :description => "API secret for the Catalog API", :type => String
+    config.define 'query.host',      :description => "Host to send Query API requests to", :type => String, :default => "http://api.infochimps.com", :no_help => true, :env_var => "APEYEYE", :no_help => true
+    config.define 'catalog.host',    :description => "Host to send Catalog API requests to", :type => String, :default => "http://www.infochimps.com", :env_var => "GEORGE", :no_help => true
   end
   define_config
 

@@ -21,7 +21,7 @@ Chimps.boot!
 # Alternatively, you can just directly specify your key and skip the
 # boot with
 #
-#   Chimps.config[:query][:key] = "YOUR QUERY API KEY"
+#   Chimps.config[:apikey] = "YOUR API KEY"
 
 # Say we to sort our friends by their Infochimps TrstRank score.  The
 # TrstRank dataset we're querying is available at
