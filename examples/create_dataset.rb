@@ -6,6 +6,4 @@ Chimps.boot!
 # You could also explicitly set the minimum required configuration
 # directly:
 #
-#   Chimps.config[:catalog][:key]    = "YOUR CATALOG API KEY"
-#   Chimps.config[:catalog][:secret] = "YOUR CATALOG API SECRET"
-#   Chimps.config[:query][:key]      = "YOUR QUERY API KEY"
+#   Chimps.config[:apikey]      = "YOUR API KEY"

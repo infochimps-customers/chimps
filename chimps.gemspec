@@ -17,10 +17,12 @@ Gem::Specification.new do |s|
   s.require_paths    = ["lib"]
   
   s.add_dependency "json"
-  s.add_dependency "configliere", ">= 0.3.2"
+  s.add_dependency "configliere", "0.4.6"
   s.add_dependency "rest-client", ">= 1.6.1"
   s.add_dependency "addressable"
 
-  s.add_development_dependency "rspec", ">= 2.0.0"
+  s.add_development_dependency "rake", "~> 0.9.2"
+  s.add_development_dependency "rspec", "~> 2.6.0"
+  s.add_development_dependency "yard", '~> 0.7.2'
 end
 

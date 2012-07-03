@@ -102,7 +102,7 @@ module Chimps
     #
     # @return [true, false]
     def authenticable?
-      Chimps.config[:catalog][:key] && Chimps.config[:catalog][:secret]
+      Chimps.config[:apikey]
     end
     alias_method :signable?, :authenticable?
 
@@ -203,9 +203,9 @@ module Chimps
     # false.
     def authenticate_if_necessary!
       return unless authenticate? && should_encode?
-      raise Chimps::AuthenticationError.new("Catalog API key (Chimps.config[:catalog][:key]) or secret (Chimps.config[:catalog][:secret]) missing from #{Chimps.config[:config]} or #{Chimps.config[:site_config]}") unless (authenticable? || @forgive_authentication_error)
+      raise Chimps::AuthenticationError.new("API key (Chimps.config[:apikey]) missing from #{Chimps.config[:config]} or #{Chimps.config[:site_config]}") unless (authenticable? || @forgive_authentication_error)
       query_params[:requested_at] = Time.now.to_i.to_s
-      query_params[:apikey]       = Chimps.config[:catalog][:key]
+      query_params[:apikey]       = Chimps.config[:apikey]
     end
 
     # Return an unsigned query string for this request.
@@ -246,9 +246,8 @@ module Chimps
     # @param [String]
     # @return [String]
     def sign string
-      raise Chimps::AuthenticationError.new("No Catalog API secret stored in #{Chimps.config[:config]} or #{Chimps.config[:site_config]}.  Set Chimps.config[:catalog][:secret].") unless (authenticable? || @forgive_authentication_error)
-      require 'digest/md5'
-      Digest::MD5.hexdigest(string + Chimps.config[:catalog][:secret])
+      raise Chimps::AuthenticationError.new("No API Key stored in #{Chimps.config[:config]} or #{Chimps.config[:site_config]}.  Set Chimps.config[:apikey].") unless (authenticable? || @forgive_authentication_error)
+      Chimps.config[:apikey]
     end
 
     # Append the signature to the unsigned query string.

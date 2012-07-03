@@ -3,10 +3,12 @@
 Infochimps[http://www.infochimps.com] is an online data marketplace
 and repository where anyone can find, share, and sell data.
 
-Infochimps offers two APIs for users to access and modify data
+Infochimps offers two APIs for users to access and modify data. 
 
-- a {Catalog API}[http://www.infochimps.com/catalog-api] to list, show, create, update, and destroy datasets and associated resources on Infochimps[http://www.infochimps.com]
-- a {Query API}[http://www.infochimps.com/apis] to query data from particular rows of these datasets
+- {Catalog}[http://www.infochimps.com/catalog-api] List, Show, Create, Update, and Destroy Catalogs
+- {Query}[http://www.infochimps.com/apis] Query a particular Catalog
+
+You will need an API key in order to query specific catalogs, and to create/destroy catalogs.
 
 *Chimps* is a Ruby library that makes interacting with Infochimps' APIs as easy as
 
@@ -15,8 +17,7 @@ Infochimps offers two APIs for users to access and modify data
   
   # Sign up for an Infochimps account and get your keys from
   # http://www.infochimps.com/me
-  Chimps.config[:catalog][:key]    = "Your Catalog API key"
-  Chimps.config[:catalog][:secret] = "Your Catalog API secret"
+  Chimps.config[:apikey] = "Your API key"
 
   # list datasets in JSON
   Chimps::Request.new("/datasets").get.print
@@ -43,17 +44,14 @@ with
 
 Then you can install Chimps with
 
-  $ sudo gem install chimps
+  $ gem install chimps
 
 == Configuring Chimps  
 
-You'll need a Dataset API key and secret from Infochimps before you
-can start adding or modifying datasets via the Dataset API.  {Sign up
+You'll need an API key from Infochimps before you
+can start adding or modifying datasets.  {Sign up
 for an Infochimps account}[http://www.infochimps.com/signup] and get
-your {Catalog API key}[http://www.infochimps.com/me].
-
-To query particular rows from a dataset, you'll also need to get a
-{Query API key}[http://www.infochimps.com/apis].
+your {API key}[http://www.infochimps.com/me].
 
 You can always explicitly set values in <tt>Chimps.config</tt> like
 in the first example at the top of this +README+ but you may find it
@@ -64,14 +62,8 @@ Chimps will look for configuration in two places:
 registered for the API(s) you can create one of these files.  The
 configuration file looks like
 
-
-    # -*-yaml-*-
-    # ~/.chimps
-    :catalog:
-      :key:      xxxxxxxxxxxxxxxx
-      :secret:   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    :query:
-      :key:      xxxxxxxxxxxxxxxxx
+    username: banana
+    apikey: banananananananananananananana
 
 Your personal configuration file (<tt>~/.chimps</tt>) will override
 the site-configuration file (<tt>/etc/chimps/chimps.yaml</tt>).
@@ -140,9 +132,9 @@ look inside:
 Many Catalog API calls at Infochimps (like listing datasets, above) do
 not require the request to be signed in any way.  Other requests,
 which reveal your private information or create new datasets, &c. on
-Infochimps will require your Catalog API secret to sign.  You can see
+Infochimps will require your API key.  You can see
 a full list of the Catalog API endpoints available and whether or not
-requests to each need to be signed at
+requests to each need an API key at
 http://www.infochimps.com/catalog-api.
 
 Assuming you've properly configured Chimps (see above) you ask the
@@ -154,7 +146,7 @@ request to sign itself.
   response.print
   # lotsa JSON...but only about *your* datasets
 
-The authentication mechanism uses the Catalog API secret (which is
+The authentication mechanism uses the API key (which is
 shared between you and Infochimps) to sign either the query string
 (for the case of +GET+ and +DELETE+ requests) or the request body (for
 +POST+ and +PUT+ requests).
@@ -207,7 +199,7 @@ an example.
 
 = Uploading Data
 
-Coming soon!  For now you will have to upload your data manually
+Coming soon! For now you will have to upload your data manually
 through the Infochimps website.
 
 = Contributing
